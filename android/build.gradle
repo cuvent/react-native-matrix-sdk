@@ -66,6 +66,7 @@ repositories {
         // Android JSC is installed from npm
         url "$rootDir/../node_modules/jsc-android/dist"
     }
+    maven { url 'https://jitpack.io' }
     google()
     jcenter()
 }
@@ -73,6 +74,9 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
+
+    // Matrix android SDK https://github.com/matrix-org/matrix-android-sdk
+    implementation 'com.github.matrix-org:matrix-android-sdk:v0.9.33'
 }
 
 def configureReactNativePom(def pom) {
