@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
 
-const { MatrixSdk } = NativeModules;
-export default MatrixSdk;
+const { RN_MatrixSdk: MatrixSDK } = NativeModules;
+
+export default MatrixSDK;

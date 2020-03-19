@@ -8,14 +8,14 @@ declare module 'react-native-matrix-sdk' {
     device_id: string;
   }
 
-  export interface MatrixSdkStatic {
+  export interface MatrixSDKStatic {
     configure(host: string): void;
     // TODO: actually credentials are returned as string, and not as Credentials Type
     login(username: string, password: string): Promise<Credentials>;
     startSession(): Promise<boolean>;
   }
 
-  const MatrixSdk: MatrixSdkStatic;
+  const MatrixSDK: MatrixSDKStatic;
 
-  export default MatrixSdk;
+  export default MatrixSDK;
 }

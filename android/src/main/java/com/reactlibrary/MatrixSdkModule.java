@@ -36,7 +36,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "MatrixSdk";
+        return "RN_MatrixSdk";
     }
 
     @ReactMethod

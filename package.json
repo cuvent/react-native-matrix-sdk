@@ -1,7 +1,7 @@
 {
   "name": "react-native-matrix-sdk",
   "title": "React Native Matrix Sdk",
-  "version": "1.0.3",
+  "version": "1.0.0-alpha4",
   "description": "React Native SDK for Matrix.org",
   "main": "index.js",
   "types": "./types/index.d.ts",
