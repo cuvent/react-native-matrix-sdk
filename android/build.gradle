@@ -86,6 +86,7 @@ dependencies {
 
     // Matrix android SDK https://github.com/matrix-org/matrix-android-sdk
     implementation 'com.github.matrix-org:matrix-android-sdk:v0.9.33'
+    implementation 'org.matrix.gitlab.matrix-org:olm:3.1.2'
 }
 
 def configureReactNativePom(def pom) {

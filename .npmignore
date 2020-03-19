@@ -9,3 +9,7 @@ dist
 
 # Dependency directory
 node_modules
+
+.idea
+*.idea
+.idea/
