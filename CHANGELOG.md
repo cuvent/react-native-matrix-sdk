@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha5
+
+* Removing unnecessary files
+
 ## 1.0.0-alpha4
 
 * Actually implemented `configure`, `login`, `startSession` functionality in library

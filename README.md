@@ -1,3 +1,5 @@
+![badge](https://img.shields.io/npm/v/react-native-matrix-sdk)
+
 # react-native-matrix-sdk
 
 **Attention:** This is still under development and not ready for being used, yet. 

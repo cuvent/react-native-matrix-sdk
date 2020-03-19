@@ -13,3 +13,7 @@ node_modules
 .idea
 *.idea
 .idea/
+
+.gradle
+.gradle/
+.watchmanconfig
