@@ -48,7 +48,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule {
         new LoginRestClient(hsConfig).loginWithUser(username, password, new SimpleApiCallback<Credentials>() {
             @Override
             public void onSuccess(Credentials info) {
-                callback.invoke(info.accessToken);
+                callback.invoke(info.toString());
             }
         });
     }

@@ -1,9 +1,10 @@
 {
   "name": "react-native-matrix-sdk",
   "title": "React Native Matrix Sdk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "React Native SDK for Matrix.org",
   "main": "index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
