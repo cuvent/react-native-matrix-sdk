@@ -60,6 +60,17 @@ We are looking forward to make steps (1-2) obsolete in the future. There exists 
 ```javascript
 import MatrixSdk from 'react-native-matrix-sdk';
 
-// TODO: What to do with the module?
-MatrixSdk;
+MatrixSdk.configure('https://your-matrix-homeserver.org');
+
+try {
+  // The credentials will be also saved to the MatrixSdk instance
+  // but they can be returned anyways.
+  const credentials = await MatrixSdk.login('test', 'test');
+  
+  // Session will be true or false.
+  const session = await MatrixSdk.startSession();
+  console.log(`Session created: ${session}`);
+} catch (e) {
+  console.error(e);
+}
 ```

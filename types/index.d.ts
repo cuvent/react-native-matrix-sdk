@@ -8,10 +8,6 @@ declare module 'react-native-matrix-sdk' {
     device_id: string;
   }
 
-  export interface Error {
-    error: string;
-  }
-
   export interface MatrixSdkStatic {
     configure(host: string): void;
     // TODO: actually credentials are returned as string, and not as Credentials Type
