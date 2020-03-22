@@ -6,6 +6,13 @@ class RNMatrixSDK: RCTEventEmitter {
     var mxSession: MXSession!
     var mxCredentials: MXCredentials!
     var mxHomeServer: URL!
+    
+    
+    @objc
+    override func supportedEvents() -> [String]! {
+        return ["matrix.room.backwards", "matrix.room.forwards"]
+    }
+
 
     @objc(configure:)
     func configure(url: String) {

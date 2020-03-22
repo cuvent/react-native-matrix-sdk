@@ -254,6 +254,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../ios/Pods/**",
+					"$(SRCROOT)/../../../ios/Pods/SwiftMatrixSDK",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -280,6 +281,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../../ios/Pods/**",
+					"$(SRCROOT)/../../../ios/Pods/SwiftMatrixSDK",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
