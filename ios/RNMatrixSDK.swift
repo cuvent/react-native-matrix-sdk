@@ -21,39 +21,28 @@ class RNMatrixSDK: RCTEventEmitter {
 
     @objc(login:password:resolver:rejecter:)
     func login(username: String, password: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        MXRestClient(homeServer: self.mxHomeServer, unrecognizedCertificateHandler: nil).login(username: username, password: password) { response in
-            if response.isSuccess {
-                let credentials = response.value
-                self.mxCredentials = credentials
-
+        // New user login
+        let dummyCredentials = MXCredentials(homeServer: self.mxHomeServer.absoluteString, userId: nil, accessToken: nil)
+        
+        let restClient = MXRestClient.init(credentials: dummyCredentials, unrecognizedCertificateHandler: nil)
+        let session = MXSession(matrixRestClient: restClient)
+        
+        session?.matrixRestClient.login(username: username, password: password, completion: { (credentials) in
+            if credentials.isSuccess {
+                self.mxCredentials = credentials.value
                 resolve([
-                    "homeServer": unNil(value: credentials?.homeServer),
-                    "userId": unNil(value: credentials?.userId),
-                    "accessToken": unNil(value: credentials?.accessToken),
+                    "homeServer": unNil(value: self.mxCredentials?.homeServer),
+                    "userId": unNil(value: self.mxCredentials?.userId),
+                    "accessToken": unNil(value: self.mxCredentials?.accessToken),
                 ])
             } else {
-                reject(nil, nil, response.error)
+                reject(nil, nil, credentials.error)
             }
-        }
+        })
     }
 
     @objc(startSession:rejecter:)
     func startSession(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-//        let url = unNil(value: credentials["homeServer"])
-//        let userId = unNil(value: credentials["userId"])
-//        let accessToken = unNil(value: credentials["accessToken"])
-//
-//        if url == nil || userId == nil || accessToken == nil {
-//            reject(nil, "Unvalid credentials", nil)
-//            return
-//        }
-//
-//        let credentials = MXCredentials(
-//            homeServer: url as! String,
-//            userId: userId as! String?,
-//            accessToken: accessToken as! String?
-//        )
-
         // Create a matrix client
         let mxRestClient = MXRestClient(credentials: self.mxCredentials, unrecognizedCertificateHandler: nil)
 
