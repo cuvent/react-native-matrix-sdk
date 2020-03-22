@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha6
+
+* Added iOS build setup and added implementation of methods in iOS (not tested yet).
+
 ## 1.0.0-alpha5
 
 * Removing unnecessary files
