@@ -3,11 +3,15 @@ import SwiftMatrixSDK
 
 @objc(RNMatrixSDK)
 class RNMatrixSDK: RCTEventEmitter {
+    var E_MATRIX_ERROR: String! = "E_MATRIX_ERROR";
+    var E_NETWORK_ERROR: String! = "E_NETWORK_ERROR";
+    var E_UNEXCPECTED_ERROR: String! = "E_UNKNOWN_ERROR";
+
     var mxSession: MXSession!
     var mxCredentials: MXCredentials!
     var mxHomeServer: URL!
-    
-    
+
+
     @objc
     override func supportedEvents() -> [String]! {
         return ["matrix.room.backwards", "matrix.room.forwards"]
@@ -23,20 +27,21 @@ class RNMatrixSDK: RCTEventEmitter {
     func login(username: String, password: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         // New user login
         let dummyCredentials = MXCredentials(homeServer: self.mxHomeServer.absoluteString, userId: nil, accessToken: nil)
-        
+
         let restClient = MXRestClient.init(credentials: dummyCredentials, unrecognizedCertificateHandler: nil)
         let session = MXSession(matrixRestClient: restClient)
-        
+
         session?.matrixRestClient.login(username: username, password: password, completion: { (credentials) in
             if credentials.isSuccess {
                 self.mxCredentials = credentials.value
                 resolve([
-                    "homeServer": unNil(value: self.mxCredentials?.homeServer),
-                    "userId": unNil(value: self.mxCredentials?.userId),
-                    "accessToken": unNil(value: self.mxCredentials?.accessToken),
+                    "home_server": unNil(value: self.mxCredentials?.homeServer),
+                    "user_id": unNil(value: self.mxCredentials?.userId),
+                    "access_token": unNil(value: self.mxCredentials?.accessToken),
+                    "device_id": unNil(value: self.mxCredentials?.deviceId),
                 ])
             } else {
-                reject(nil, nil, credentials.error)
+                reject(self.E_MATRIX_ERROR, nil, credentials.error)
             }
         })
     }
@@ -52,15 +57,15 @@ class RNMatrixSDK: RCTEventEmitter {
         // Launch mxSession: it will first make an initial sync with the homeserver
         mxSession.start { response in
             guard response.isSuccess else {
-                reject(nil, nil, response.error)
+                reject(self.E_MATRIX_ERROR, nil, response.error)
                 return
             }
 
             let user = self.mxSession.myUser
 
             resolve([
-                "id": unNil(value: user?.userId),
-                "displayname": unNil(value: user?.displayname),
+                "user_id": unNil(value: user?.userId),
+                "display_name": unNil(value: user?.displayname),
                 "avatar": unNil(value: user?.avatarUrl),
                 "last_active": unNil(value: user?.lastActiveAgo),
                 "status": unNil(value: user?.statusMsg),

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha7
+
+* Fixed iOS implementation of login
+* Android and iOS do now resolve according to the `types/index.d.ts`
+
 ## 1.0.0-alpha6
 
 * Added iOS build setup and added implementation of methods in iOS (not tested yet).

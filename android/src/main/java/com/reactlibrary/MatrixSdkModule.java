@@ -2,10 +2,12 @@ package com.reactlibrary;
 
 import android.net.Uri;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
 
 import org.json.JSONException;
 import org.matrix.androidsdk.HomeServerConnectionConfig;
@@ -93,6 +95,22 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule {
                         hsConfig.getCredentials()),
                 reactContext.getApplicationContext())
                 .build();
-        promise.resolve(mxSession.isAlive());
+
+        // The session should be alive after we created it
+        if(!mxSession.isAlive()) {
+            promise.reject(E_MATRIX_ERROR, "Couldn't start session for unknown reason.");
+            return;
+        }
+
+        WritableMap map = Arguments.createMap();
+
+        map.putString("user_id", mxSession.getMyUser().user_id);
+        map.putString("display_name", mxSession.getMyUser().displayname);
+        map.putString("avatar", mxSession.getMyUser().avatar_url);
+        Long lastActive = mxSession.getMyUser().lastActiveAgo != null ? mxSession.getMyUser().lastActiveAgo : 0L;
+        map.putDouble("last_active", lastActive);
+        map.putString("last_active", mxSession.getMyUser().statusMsg);
+
+        promise.resolve(map);
     }
 }
