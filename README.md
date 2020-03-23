@@ -73,7 +73,7 @@ Add the following to your pods file
   pod 'SwiftMatrixSDK'
 ```
 
-Before you can run `pod install` you need to setup a Seift/Objective-C briding header, as this library uses 
+Before you can run `pod install` you need to setup a Swift/Objective-C briding header, as this library uses 
 Swift code this is needed for RN to work.
 
 #### Step 2: Create Swift/Obj-C bridging header:
@@ -113,7 +113,7 @@ try {
   // but they can be returned anyways.
   const credentials = await MatrixSdk.login('test', 'test');
   
-  // Session will be true or false.
+  // Session will return MXSessionAttributes
   const session = await MatrixSdk.startSession();
   console.log(`Session created: ${session}`);
 } catch (e) {

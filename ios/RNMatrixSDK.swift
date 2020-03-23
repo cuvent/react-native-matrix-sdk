@@ -10,7 +10,7 @@ class RNMatrixSDK: RCTEventEmitter {
     var mxSession: MXSession!
     var mxCredentials: MXCredentials!
     var mxHomeServer: URL!
-    
+
     var roomEventsListeners: [String: Any] = [:]
 
 
@@ -74,7 +74,7 @@ class RNMatrixSDK: RCTEventEmitter {
             ])
         }
     }
-    
+
         @objc(createRoom:resolver:rejecter:)
         func createRoom(userId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
             if mxSession == nil {
@@ -257,7 +257,7 @@ class RNMatrixSDK: RCTEventEmitter {
                 reject(nil, "Only allow 1 listener to 1 room for now. Room id: " + roomId, nil)
                 return
             }
-            
+
             room?.liveTimeline({ (timeline) in
                 let listener = timeline?.listenToEvents {
                     event, direction, _ in
@@ -285,7 +285,7 @@ class RNMatrixSDK: RCTEventEmitter {
 
                 resolve(nil)
             })
-        
+
 
 
         }
@@ -308,7 +308,7 @@ class RNMatrixSDK: RCTEventEmitter {
                 reject(nil, "No listener for this room. Room id: " + roomId, nil)
                 return
             }
-            
+
             room?.liveTimeline({ (timeline) in
                 timeline?.removeListener(self.roomEventsListeners[roomId])
                 self.roomEventsListeners[roomId] = nil
@@ -341,7 +341,7 @@ class RNMatrixSDK: RCTEventEmitter {
                     timeline?.resetPagination()
                 })
             }
-            
+
             room?.liveTimeline({ (timeline) in
                 _ = timeline?.paginate(UInt(perPage), direction: .backwards, onlyFromStore: false) { response in
                     if response.error != nil {
@@ -445,13 +445,13 @@ class RNMatrixSDK: RCTEventEmitter {
                 reject(nil, "Room not found", nil)
                 return
             }
-            
+
             mxSession.matrixRestClient.sendMessage(toRoom: roomId, messageType: convertStringToMXMessageType(type: messageType), content: data) { (response) in
                 if(response.isFailure) {
                     reject(self.E_MATRIX_ERROR, nil, response.error)
                     return
                 }
-                
+
                 resolve(["success": response.value])
             }
         }
