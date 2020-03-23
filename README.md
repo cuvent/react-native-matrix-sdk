@@ -113,7 +113,7 @@ try {
   // but they can be returned anyways.
   const credentials = await MatrixSdk.login('test', 'test');
   
-  // Session will be true or false.
+  // Session will return MXSessionAttributes
   const session = await MatrixSdk.startSession();
   console.log(`Session created: ${session}`);
 } catch (e) {
