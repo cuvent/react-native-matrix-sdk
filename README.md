@@ -115,7 +115,13 @@ try {
   
   // Session will return MXSessionAttributes
   const session = await MatrixSdk.startSession();
-  console.log(`Session created: ${session}`);
+                                                                                       
+  // Create room, invite person & send message
+  const roomCreation = await MatrixSDK.createRoom('@alice:your-matrix-homeserver.org');
+  const roomId = roomCreation.room_id;
+  const successMessage = await MatrixSDK.sendMessageToRoom(roomId, 'text', {
+    body: 'Hello Alice 🚀',
+  });
 } catch (e) {
   console.error(e);
 }

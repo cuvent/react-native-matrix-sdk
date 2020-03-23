@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.0.0-alpha8
+
+* Added following methods for iOS - android will follow tomorrow. (Not all methods have been intensively tested yet!):
+  *   createRoom(userId: string): Promise<MXRoomAttributes>;
+  *   joinRoom(roomId: string): Promise<MXRoomAttributes>;
+  *   getInvitedRooms(): Promise<MXRoomAttributes>;
+  *   getPublicRooms(url: string): Promise<PublicRooms>;
+  *   getUnreadEventTypes(): Promise<[string]>;
+  *   getLastEventsForAllRooms(): Promise<[MXMessageEvent]>;
+  *   getJoinedRooms(): Promise<[MXRoomAttributes]>;
+  *   listenToRoom(roomId: string): Promise<void>; -> will send events to RN
+  *   unlistenToRoom(roomId: string): Promise<void>;
+  *   loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<void>;
+  *   searchMessagesInRoom(roomId: string, searchTerm: string, nextBatch: string, beforeLimit: string, afterLimit: string);
+  *   getMessages(roomId: string, from: string, direction: string, limit: string): Promise<MessagesFromRoom>;
+  *   sendMessageToRoom(roomId: string, messageType: string, data: any): Promise<SuccessResponse>;
+  *   sendReadReceipt(roomId: string, eventId: string): Promise<SuccessResponse>;
+
 ## 1.0.0-alpha7
 
 * Fixed iOS implementation of login
