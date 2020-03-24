@@ -29,6 +29,7 @@ import org.matrix.androidsdk.rest.model.CreateRoomParams;
 import org.matrix.androidsdk.rest.model.CreateRoomResponse;
 import org.matrix.androidsdk.rest.model.CreatedEvent;
 import org.matrix.androidsdk.rest.model.Event;
+import org.matrix.androidsdk.rest.model.TokensChunkEvents;
 import org.matrix.androidsdk.rest.model.login.Credentials;
 
 import java.util.ArrayList;
@@ -50,18 +51,12 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     public static final String E_NETWORK_ERROR = "E_NETWORK_ERROR";
     public static final String E_UNEXCPECTED_ERROR = "E_UNKNOWN_ERROR";
 
+    private HashMap<String, MXEventListener> roomEventListener = new HashMap<>();
 
     /**
-     * In android we can only retrieve rooms, once the inital sync is done
-     * and the initial sync can take some seconds.
-     * Therefor we have a list of pending promises that are interested in
-     * getting rooms list.
-     * Once the initial sync is completed we call {@link #getJoinedRooms(Promise)}
-     * with the promises from the list, which results in returning the rooms.
+     * Used when loading old messages
      */
-    private List<Promise> pendingRoomsPromises = new ArrayList<>();
-
-    private HashMap<String, MXEventListener> roomEventListener = new HashMap<>();
+    private HashMap<String, String> roomPaginationTokens = new HashMap<>();
 
 
     public MatrixSdkModule(ReactApplicationContext reactContext) {
@@ -73,24 +68,6 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     public String getName() {
         return "RN_MatrixSdk";
     }
-
-    /**
-     * Event Listener is used to fulfil pending promises that needed
-     * to wait for the initial sync to be happened.
-     */
-    private MXEventListener initialSyncCompletedListener = new MXEventListener() {
-        @Override
-        public void onInitialSyncComplete(String toToken) {
-            super.onInitialSyncComplete(toToken);
-            Log.d(TAG, "Initial sync completed!");
-
-            for(Promise pendingProise :  pendingRoomsPromises) {
-                getJoinedRooms(pendingProise);
-                pendingRoomsPromises.remove(pendingProise);
-            }
-
-        }
-    };
 
     @ReactMethod
     public void configure(String matrixServerUrl) {
@@ -135,12 +112,6 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             return;
         }
 
-        if(!mxSession.getDataHandler().isInitialSyncComplete()) {
-            mxSession.getDataHandler().addListener(initialSyncCompletedListener);
-            mxSession.getDataHandler().getStore().open();
-            mxSession.startEventStream(null);
-        }
-
         WritableMap map = Arguments.createMap();
 
         map.putString("user_id", mxSession.getMyUser().user_id);
@@ -150,7 +121,21 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         map.putDouble("last_active", lastActive);
         map.putString("last_active", mxSession.getMyUser().statusMsg);
 
-        promise.resolve(map);
+
+        if (!mxSession.getDataHandler().isInitialSyncComplete()) {
+            mxSession.getDataHandler().addListener(new MXEventListener() {
+                @Override
+                public void onInitialSyncComplete(String toToken) {
+                    super.onInitialSyncComplete(toToken);
+                    promise.resolve(map);
+                    mxSession.getDataHandler().removeListener(this);
+                }
+            });
+            mxSession.getDataHandler().getStore().open();
+            mxSession.startEventStream(null);
+        } else {
+            promise.resolve(map);
+        }
     }
 
     @ReactMethod
@@ -186,7 +171,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
 
-        if(mxSession.getDataHandler().isInitialSyncComplete()) {
+        if (mxSession.getDataHandler().isInitialSyncComplete()) {
             WritableArray rooms = Arguments.createArray();
             for (Room room : mxSession.getDataHandler().getStore().getRooms()) {
                 rooms.pushMap(
@@ -196,7 +181,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
             promise.resolve(rooms);
         } else {
-            pendingRoomsPromises.add(promise);
+            promise.reject(E_MATRIX_ERROR, "Initial sync ain't completed yet, please start session first");
         }
     }
 
@@ -213,14 +198,9 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             return;
         }
 
-//        room.getTimeline().addEventTimelineListener((event, direction, roomState) -> {
-//            // doesn't give typing indications
-//        });
-
         MXEventListener eventListener = new MXEventListener() {
             @Override
             public void onLiveEvent(Event event, RoomState roomState) {
-                super.onLiveEvent(event, roomState);
                 sendEvent(
                         "matrix.room.forwards",
                         convertEventToMap(event)
@@ -250,6 +230,40 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
         room.removeEventListener(roomEventListener.get(roomId));
         promise.resolve(null);
+    }
+
+    @ReactMethod
+    public void loadMessagesInRoom(String roomId, int perPage, boolean initialLoad, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId);
+        if (room == null) {
+            promise.reject(E_MATRIX_ERROR, "Room not found");
+            return;
+        }
+
+
+        WritableMap successMap = Arguments.createMap();
+        successMap.putBoolean("success", true);
+
+        String fromToken = null;
+        if(!initialLoad && roomPaginationTokens.get(roomId) != null) {
+            fromToken = roomPaginationTokens.get(roomId);
+        }
+
+        room.requestServerRoomHistory(fromToken, perPage, new RejectingOnErrorApiCallback<TokensChunkEvents>(promise) {
+            @Override
+            public void onSuccess(TokensChunkEvents info) {
+                roomPaginationTokens.put(roomId, info.end);
+                for (Event event : info.chunk) {
+                    sendEvent("matrix.room.backwards", convertEventToMap(event));
+                }
+                promise.resolve(successMap);
+            }
+        });
     }
 
     @ReactMethod
@@ -286,7 +300,6 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     @Override
     public void onHostDestroy() {
         mxSession.stopEventStream();
-        mxSession.getDataHandler().removeListener(initialSyncCompletedListener);
     }
 
 
