@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha10
+
+* Added unlistenToRoom and loadMessagesInRoom API for android 
+* Fixed state issues on android side. 
+
 ## 1.0.0-alpha9
 
 * Added following methods for android:
