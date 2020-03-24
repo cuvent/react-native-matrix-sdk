@@ -10,7 +10,7 @@
   *   getUnreadEventTypes(): Promise<[string]>;
   *   getLastEventsForAllRooms(): Promise<[MXMessageEvent]>;
   *   getJoinedRooms(): Promise<[MXRoomAttributes]>;
-  *   listenToRoom(roomId: string): Promise<void>; -> will send events to RN
+  *   listenToRoom(roomId: string): Promise<void>; -> will send events to RNead
   *   unlistenToRoom(roomId: string): Promise<void>;
   *   loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<void>;
   *   searchMessagesInRoom(roomId: string, searchTerm: string, nextBatch: string, beforeLimit: string, afterLimit: string);
