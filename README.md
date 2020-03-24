@@ -177,3 +177,8 @@ const success = await MatrixSDK.loadMessagesInRoom(roomId, 50, true);
 // Load further 50 messages
 const success = await MatrixSDK.loadMessagesInRoom(roomId, 50, false);
 ```
+
+## Software license
+
+This is considered shared-code, and is currently not allowed to be used in commercial products as it is distibuted  
+under the [Attribution-NonCommercial-ShareAlike 2.0 Generic (CC BY-NC-SA 2.0)](https://creativecommons.org/licenses/by-nc-sa/2.0/) license.
