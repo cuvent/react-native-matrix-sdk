@@ -4,6 +4,7 @@
 
 **Attention:** This is still under development and not ready for being used, yet. 
 Any contribution is welcomed (especially if you have iOS/Swift/Obj-C skills).
+the most recent versions are the `*-alpha*` versions, don't use any other!
 
 ## Getting started
 
