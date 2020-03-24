@@ -13,11 +13,14 @@ import org.json.JSONException;
 import org.matrix.androidsdk.HomeServerConnectionConfig;
 import org.matrix.androidsdk.MXDataHandler;
 import org.matrix.androidsdk.MXSession;
+import org.matrix.androidsdk.core.callback.ApiCallback;
 import org.matrix.androidsdk.core.callback.SimpleApiCallback;
 import org.matrix.androidsdk.core.model.MatrixError;
 import org.matrix.androidsdk.data.store.MXMemoryStore;
 import org.matrix.androidsdk.rest.client.LoginRestClient;
 import org.matrix.androidsdk.rest.model.login.Credentials;
+
+import static com.reactlibrary.MatrixData.convertRoomToMap;
 
 public class MatrixSdkModule extends ReactContextBaseJavaModule {
     private final String TAG = MatrixSdkModule.class.getSimpleName();
@@ -112,5 +115,37 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule {
         map.putString("last_active", mxSession.getMyUser().statusMsg);
 
         promise.resolve(map);
+    }
+
+    @ReactMethod
+    public void createRoom(String userId, Promise promise) {
+        if(mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        mxSession.createDirectMessageRoom(userId, new ApiCallback<String>() {
+            @Override
+            public void onNetworkError(Exception e) {
+                promise.reject(E_NETWORK_ERROR, e.getMessage());
+            }
+
+            @Override
+            public void onMatrixError(MatrixError e) {
+                promise.reject(E_MATRIX_ERROR, e.getMessage());
+            }
+
+            @Override
+            public void onUnexpectedError(Exception e) {
+                promise.reject(E_UNEXCPECTED_ERROR, e.getMessage());
+            }
+
+            @Override
+            public void onSuccess(String roomId) {
+                promise.resolve(
+                        convertRoomToMap(mxSession.getDataHandler().getRoom(roomId))
+                );
+            }
+        });
     }
 }
