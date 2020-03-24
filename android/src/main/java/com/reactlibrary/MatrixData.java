@@ -12,13 +12,14 @@ import static com.reactlibrary.MatrixSdkModule.TAG;
 
 public class MatrixData {
     public static WritableMap convertEventToMap(Event matrixEvent) {
+        long age = matrixEvent.age != null ? matrixEvent.age : 0L;
         WritableMap map = Arguments.createMap();
         map.putString("event_type", matrixEvent.type);
         map.putString("event_id", matrixEvent.eventId);
         map.putString("room_id", matrixEvent.roomId);
         map.putString("sender_id", matrixEvent.sender);
-        map.putDouble("age", matrixEvent.age);
-        map.putString("content", matrixEvent.contentJson.getAsString());
+        map.putDouble("age", age);
+        map.putMap("content", RNJson.convertJsonToMap(matrixEvent.getContentAsJsonObject()));
         return map;
     }
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-alpha9
+
+* Added following methods for android:
+  * createRoom(userId: string): Promise<MXRoomAttributes>;
+  * getJoinedRooms(): Promise<[MXRoomAttributes]>;
+  * listenToRoom(roomId: string): Promise<void>; -> will send events to RN
+  * sendMessageToRoom(roomId: string, messageType: string, data: any): Promise<SuccessResponse>;
+
 ## 1.0.0-alpha8
 
 * Added following methods for iOS - android will follow tomorrow. (Not all methods have been intensively tested yet!):

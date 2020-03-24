@@ -12,24 +12,23 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
 
 public class RNJson {
-    // TODO: when want to use convert to GSON
-    public static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
+
+    public static WritableMap convertJsonToMap(JsonObject jsonObject) {
         WritableMap map = new WritableNativeMap();
 
-        Iterator<String> iterator = jsonObject.keys();
+        Iterator<String> iterator = jsonObject.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
             Object value = jsonObject.get(key);
             if (value instanceof JSONObject) {
-                map.putMap(key, convertJsonToMap((JSONObject) value));
+                map.putMap(key, convertJsonToMap((JsonObject) value));
             } else if (value instanceof  JSONArray) {
-                map.putArray(key, convertJsonToArray((JSONArray) value));
+                map.putArray(key, convertJsonToArray((JsonArray) value));
             } else if (value instanceof  Boolean) {
                 map.putBoolean(key, (Boolean) value);
             } else if (value instanceof  Integer) {
@@ -45,16 +44,16 @@ public class RNJson {
         return map;
     }
 
-    // TODO: when want to use convert to GSON
-    public static WritableArray convertJsonToArray(JSONArray jsonArray) throws JSONException {
+
+    public static WritableArray convertJsonToArray(JsonArray jsonArray) {
         WritableArray array = new WritableNativeArray();
 
-        for (int i = 0; i < jsonArray.length(); i++) {
+        for (int i = 0; i < jsonArray.size(); i++) {
             Object value = jsonArray.get(i);
             if (value instanceof JSONObject) {
-                array.pushMap(convertJsonToMap((JSONObject) value));
+                array.pushMap(convertJsonToMap((JsonObject) value));
             } else if (value instanceof  JSONArray) {
-                array.pushArray(convertJsonToArray((JSONArray) value));
+                array.pushArray(convertJsonToArray((JsonArray) value));
             } else if (value instanceof  Boolean) {
                 array.pushBoolean((Boolean) value);
             } else if (value instanceof  Integer) {

@@ -106,6 +106,9 @@ cd ios/ && pod install && cd ..
 ```
 
 ## Usage
+
+Various use cases: 
+
 ```javascript
 import MatrixSdk from 'react-native-matrix-sdk';
 
@@ -124,8 +127,29 @@ try {
   const roomId = roomCreation.room_id;
   const successMessage = await MatrixSDK.sendMessageToRoom(roomId, 'text', {
     body: 'Hello Alice 🚀',
+    msgtype: 'm.text',
   });
 } catch (e) {
   console.error(e);
 }
+```  
+
+### Listening to new events in a room
+
+For listening to events in a specific chat room, add a event listener to that room.
+Don't forget to `unlisten` when your component dismounts!
+
+```javascript 
+  // Add listener for events
+  const matrixRoomTestEmitter = new NativeEventEmitter(MatrixSDK);
+  // Only listen to future events, thus using 'matrix.room.forwards'
+  // If you want to listen to past events use 'matrix.room.backwards' (there is another method just for getting messages, don't use this one)
+  matrixRoomTestEmitter.addListener('matrix.room.forwards', event => {
+    if (event.event_type === 'm.room.message') {
+      console.log(event.content.body);
+    }
+  });
+
+  await MatrixSDK.listenToRoom(roomId);
+  console.log('Subscription to room has been made, Captain!');
 ```

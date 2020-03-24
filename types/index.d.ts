@@ -1,68 +1,70 @@
+declare interface MXCredentials {
+  user_id: string;
+  home_server: string;
+  access_token: string;
+  refresh_token: string | undefined;
+  device_id: string;
+}
+
+declare interface MXSessionAttributes {
+  user_id: string;
+  display_name: string;
+  avatar: string;
+  last_active: number;
+  status: string;
+}
+
+declare enum MessageEventType {
+  text = "text",
+  image = "image",
+  video = "video",
+  file = "file",
+  audio = "audio",
+  emote = "emote",
+  location = "location",
+}
+
+
+declare interface MXMessageEvent {
+  event_type: MessageEventType;
+  event_id: string;
+  room_id: string;
+  sender_id: string;
+  age: number;
+  content: string;
+}
+
+declare interface MXRoomAttributes {
+  room_id: string;
+  name: string;
+  notificationcount: number;
+  highlight_count: number;
+  is_direct: boolean;
+  last_message: MXMessageEvent;
+}
+
+declare interface PublicRooms {
+  id: string;
+  aliases: string;
+  name: string;
+  guestCanJoin: boolean;
+  numJoinedMembers: number;
+}
+
+declare interface MessagesFromRoom {
+  start: string;
+  end: string;
+  results: [string];
+}
+
+declare interface SuccessResponse {
+  success: string;
+}
+
 declare module 'react-native-matrix-sdk' {
-  export interface MXCredentials {
-    user_id: string;
-    home_server: string;
-    access_token: string;
-    refresh_token: string | undefined;
-    device_id: string;
-  }
+  import {EventSubscriptionVendor} from "react-native";
 
-  export interface MXSessionAttributes {
-    user_id: string;
-    display_name: string;
-    avatar: string;
-    last_active: number;
-    status: string;
-  }
-
-  export enum MessageEventType {
-    text = "text",
-    image = "image",
-    video = "video",
-    file = "file",
-    audio = "audio",
-    emote = "emote",
-    location = "location",
-  }
-
-
-  export interface MXMessageEvent {
-    event_type: MessageEventType;
-    event_id: string;
-    room_id: string;
-    sender_id: string;
-    age: number;
-    content: string;
-  }
-
-  export interface MXRoomAttributes {
-    room_id: string;
-    name: string;
-    notificationcount: number;
-    highlight_count: number;
-    is_direct: boolean;
-    last_message: MXMessageEvent;
-  }
-
-  export interface PublicRooms {
-    id: string;
-    aliases: string;
-    name: string;
-    guestCanJoin: boolean;
-    numJoinedMembers: number;
-  }
-
-  export interface MessagesFromRoom {
-    start: string;
-    end: string;
-    results: [string];
-  }
-
-  export interface SuccessResponse {
-    success: string;
-  }
-
-  export interface MatrixSDKStatic {
+  export interface MatrixSDKStatic extends EventSubscriptionVendor {
     configure(host: string): void;
     // TODO: actually credentials are returned as string, and not as Credentials Type
     login(username: string, password: string): Promise<MXCredentials>;
