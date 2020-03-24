@@ -80,7 +80,7 @@ declare module 'react-native-matrix-sdk' {
     unlistenToRoom(roomId: string): Promise<void>;
     loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<void>;
     searchMessagesInRoom(roomId: string, searchTerm: string, nextBatch: string, beforeLimit: string, afterLimit: string);
-    getMessages(roomId: string, from: string, direction: string, limit: string): Promise<MessagesFromRoom>;
+    getMessages(roomId: string, from: string, direction: string, limit: number): Promise<MessagesFromRoom>;
     sendMessageToRoom(roomId: string, messageType: string, data: any): Promise<SuccessResponse>;
     sendReadReceipt(roomId: string, eventId: string): Promise<SuccessResponse>;
   }
