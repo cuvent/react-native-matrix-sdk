@@ -143,7 +143,7 @@ Don't forget to `unlisten` when your component dismounts!
   // Add listener for events
   const matrixRoomTestEmitter = new NativeEventEmitter(MatrixSDK);
   // Only listen to future events, thus using 'matrix.room.forwards'
-  // If you want to listen to past events use 'matrix.room.backwards' (there is another method just for getting messages, don't use this one)
+  // If you want to listen to past events use 'matrix.room.backwards'
   matrixRoomTestEmitter.addListener('matrix.room.forwards', event => {
     if (event.event_type === 'm.room.message') {
       console.log(event.content.body);
@@ -152,4 +152,28 @@ Don't forget to `unlisten` when your component dismounts!
 
   await MatrixSDK.listenToRoom(roomId);
   console.log('Subscription to room has been made, Captain!');
+```
+
+### Getting (past) messages of a room
+
+1. First, we need to add a listener and listen to room events. This listener will receive then 
+the old messages: 
+
+```javascript
+  // Add listener for events
+  const matrixRoomTestEmitter = new NativeEventEmitter(MatrixSDK);
+  // Only listen to pas events, thus using 'matrix.room.backwards'
+  matrixRoomTestEmitter.addListener('matrix.room.backwards', event => {
+    if (event.event_type === 'm.room.message') {
+      console.log(event.content.body);
+    }
+  });
+``` 
+
+2. Now we want to load old messages: 
+
+```javascript
+const success = await MatrixSDK.loadMessagesInRoom(roomId, 50, true);
+// Load further 50 messages
+const success = await MatrixSDK.loadMessagesInRoom(roomId, 50, false);
 ```
