@@ -32,6 +32,7 @@ import org.matrix.androidsdk.rest.model.Event;
 import org.matrix.androidsdk.rest.model.login.Credentials;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,6 +60,8 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
      * with the promises from the list, which results in returning the rooms.
      */
     private List<Promise> pendingRoomsPromises = new ArrayList<>();
+
+    private HashMap<String, MXEventListener> roomEventListener = new HashMap<>();
 
 
     public MatrixSdkModule(ReactApplicationContext reactContext) {
@@ -214,7 +217,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 //            // doesn't give typing indications
 //        });
 
-        room.addEventListener(new MXEventListener() {
+        MXEventListener eventListener = new MXEventListener() {
             @Override
             public void onLiveEvent(Event event, RoomState roomState) {
                 super.onLiveEvent(event, roomState);
@@ -224,8 +227,28 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                 );
                 Log.d(TAG, event.toString());
             }
-        });
+        };
 
+        roomEventListener.put(roomId, eventListener);
+        room.addEventListener(eventListener);
+
+        promise.resolve(null);
+    }
+
+    @ReactMethod
+    public void unlistenToRoom(String roomId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId);
+        if (room == null) {
+            promise.reject(E_MATRIX_ERROR, "Room not found");
+            return;
+        }
+
+        room.removeEventListener(roomEventListener.get(roomId));
         promise.resolve(null);
     }
 
