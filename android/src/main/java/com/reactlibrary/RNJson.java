@@ -8,35 +8,35 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.Iterator;
 
 public class RNJson {
 
     public static WritableMap convertJsonToMap(JsonObject jsonObject) {
         WritableMap map = new WritableNativeMap();
 
-        Iterator<String> iterator = jsonObject.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            Object value = jsonObject.get(key);
-            if (value instanceof JSONObject) {
+        for (String key : jsonObject.keySet()) {
+            JsonElement value = jsonObject.get(key);
+            if (value.isJsonObject()) {
                 map.putMap(key, convertJsonToMap((JsonObject) value));
-            } else if (value instanceof  JSONArray) {
+            } else if (value.isJsonArray()) {
                 map.putArray(key, convertJsonToArray((JsonArray) value));
-            } else if (value instanceof  Boolean) {
-                map.putBoolean(key, (Boolean) value);
-            } else if (value instanceof  Integer) {
-                map.putInt(key, (Integer) value);
-            } else if (value instanceof  Double) {
-                map.putDouble(key, (Double) value);
-            } else if (value instanceof String)  {
-                map.putString(key, (String) value);
+            } else if (value.isJsonPrimitive()) {
+                if(value.getAsJsonPrimitive().isBoolean()) {
+                    map.putBoolean(key, value.getAsBoolean());
+                } else if(value.getAsJsonPrimitive().isString()) {
+                    map.putString(key, value.getAsString());
+                } else if(value.getAsJsonPrimitive().isNumber()) {
+                    if (isJsonElementInteger(value)) {
+                        map.putInt(key, value.getAsInt());
+                    } else {
+                        map.putDouble(key, value.getAsDouble());
+                    }
+                }
+            } else if(value.isJsonNull()) {
+                map.putNull(key);
             } else {
                 map.putString(key, value.toString());
             }
@@ -49,19 +49,23 @@ public class RNJson {
         WritableArray array = new WritableNativeArray();
 
         for (int i = 0; i < jsonArray.size(); i++) {
-            Object value = jsonArray.get(i);
-            if (value instanceof JSONObject) {
+            JsonElement value = jsonArray.get(i);
+            if (value.isJsonObject()) {
                 array.pushMap(convertJsonToMap((JsonObject) value));
-            } else if (value instanceof  JSONArray) {
+            } else if (value.isJsonArray()) {
                 array.pushArray(convertJsonToArray((JsonArray) value));
-            } else if (value instanceof  Boolean) {
-                array.pushBoolean((Boolean) value);
-            } else if (value instanceof  Integer) {
-                array.pushInt((Integer) value);
-            } else if (value instanceof  Double) {
-                array.pushDouble((Double) value);
-            } else if (value instanceof String)  {
-                array.pushString((String) value);
+            } else if (value.getAsJsonPrimitive().isBoolean()) {
+                array.pushBoolean(value.getAsBoolean());
+            } else if (value.getAsJsonPrimitive().isNumber()) {
+                if (isJsonElementInteger(value)) {
+                    array.pushInt(value.getAsInt());
+                } else {
+                    array.pushDouble(value.getAsDouble());
+                }
+            } else if (value.getAsJsonPrimitive().isString())  {
+                array.pushString(value.getAsString());
+            } else if (value.isJsonNull()) {
+                array.pushNull();
             } else {
                 array.pushString(value.toString());
             }
@@ -122,5 +126,13 @@ public class RNJson {
             }
         }
         return array;
+    }
+
+    private static boolean isJsonElementInteger(JsonElement element) {
+        if(!element.getAsJsonPrimitive().isNumber()) {
+            return false;
+        }
+
+        return ((element.getAsDouble() == Math.floor(element.getAsDouble())) && !Double.isInfinite(element.getAsDouble()));
     }
 }
