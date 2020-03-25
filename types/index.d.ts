@@ -43,7 +43,7 @@ declare interface MXRoomAttributes {
   last_message: MXMessageEvent;
 }
 
-declare interface PublicRooms {
+declare interface PublicRoom {
   id: string;
   aliases: string;
   name: string;
@@ -71,8 +71,8 @@ declare module 'react-native-matrix-sdk' {
     startSession(): Promise<MXSessionAttributes>;
     createRoom(userId: string): Promise<MXRoomAttributes>;
     joinRoom(roomId: string): Promise<MXRoomAttributes>;
-    getInvitedRooms(): Promise<MXRoomAttributes>;
-    getPublicRooms(url: string): Promise<PublicRooms>;
+    getInvitedRooms(): Promise<[MXRoomAttributes]>;
+    getPublicRooms(url: string): Promise<[PublicRoom]>;
     getUnreadEventTypes(): Promise<[string]>;
     getLastEventsForAllRooms(): Promise<[MXMessageEvent]>;
     getJoinedRooms(): Promise<[MXRoomAttributes]>;

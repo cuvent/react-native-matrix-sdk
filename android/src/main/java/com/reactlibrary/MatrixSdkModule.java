@@ -165,7 +165,22 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         });
     }
 
-//    TODO: joinRoom(roomId: string): Promise<MXRoomAttributes>;
+    @ReactMethod
+    public void joinRoom(String roomId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        mxSession.joinRoom(roomId, new RejectingOnErrorApiCallback<String>(promise) {
+            @Override
+            public void onSuccess(String info) {
+                promise.resolve(
+                        convertRoomToMap(mxSession.getDataHandler().getRoom(roomId))
+                );
+            }
+        });
+    }
 
     @ReactMethod
     public void getInvitedRooms(Promise promise) {
