@@ -78,6 +78,9 @@ declare module 'react-native-matrix-sdk' {
     getJoinedRooms(): Promise<[MXRoomAttributes]>;
     listenToRoom(roomId: string): Promise<void>;
     unlistenToRoom(roomId: string): Promise<void>;
+    listenToRoom(roomId: string): Promise<void>;
+    listen(): Promise<SuccessResponse>;
+    unlisten(): void;
     loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<void>;
     searchMessagesInRoom(roomId: string, searchTerm: string, nextBatch: string, beforeLimit: string, afterLimit: string);
     getMessages(roomId: string, from: string, direction: string, limit: number): Promise<MessagesFromRoom>;
