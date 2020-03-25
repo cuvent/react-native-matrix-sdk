@@ -12,11 +12,50 @@ class RNMatrixSDK: RCTEventEmitter {
     var mxHomeServer: URL!
 
     var roomEventsListeners: [String: Any] = [:]
+    var globalListener: Any?
 
 
     @objc
     override func supportedEvents() -> [String]! {
-        return ["matrix.room.backwards", "matrix.room.forwards"]
+        return ["matrix.room.backwards",
+                "matrix.room.forwards",
+                "m.fully_read",
+                MXEventType.roomName.identifier,
+                MXEventType.roomTopic.identifier,
+                MXEventType.roomAvatar.identifier,
+                MXEventType.roomMember.identifier,
+                MXEventType.roomCreate.identifier,
+                MXEventType.roomJoinRules.identifier,
+                MXEventType.roomPowerLevels.identifier,
+                MXEventType.roomAliases.identifier,
+                MXEventType.roomCanonicalAlias.identifier,
+                MXEventType.roomEncrypted.identifier,
+                MXEventType.roomEncryption.identifier,
+                MXEventType.roomGuestAccess.identifier,
+                MXEventType.roomHistoryVisibility.identifier,
+                MXEventType.roomKey.identifier,
+                MXEventType.roomForwardedKey.identifier,
+                MXEventType.roomKeyRequest.identifier,
+                MXEventType.roomMessage.identifier,
+                MXEventType.roomMessageFeedback.identifier,
+                MXEventType.roomRedaction.identifier,
+                MXEventType.roomThirdPartyInvite.identifier,
+                MXEventType.roomTag.identifier,
+                MXEventType.presence.identifier,
+                MXEventType.typing.identifier,
+                MXEventType.callInvite.identifier,
+                MXEventType.callCandidates.identifier,
+                MXEventType.callAnswer.identifier,
+                MXEventType.callHangup.identifier,
+                MXEventType.reaction.identifier,
+                MXEventType.receipt.identifier,
+                MXEventType.roomTombStone.identifier,
+                MXEventType.keyVerificationStart.identifier,
+                MXEventType.keyVerificationAccept.identifier,
+                MXEventType.keyVerificationKey.identifier,
+                MXEventType.keyVerificationMac.identifier,
+                MXEventType.keyVerificationCancel.identifier]
+
     }
 
 
@@ -315,6 +354,41 @@ class RNMatrixSDK: RCTEventEmitter {
 
             resolve(nil)
         })
+    }
+
+    @objc(listen:rejecter:)
+    func listen(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        if self.globalListener != nil {
+            reject(E_MATRIX_ERROR, "You already started listening, only one global listener is supported. You maybe forget to call `unlisten()`", nil)
+            return
+        }
+
+        // additionalObject: additional contect for the event. In case of room event, `customObject` is a `RoomState` instance. In the case of a presence, `customObject` is `nil`.
+        self.globalListener = mxSession.listenToEvents { (event: MXEvent, timelineDirection: MXTimelineDirection, additionalObject) in
+            // Only listen to future events
+            if timelineDirection == .forwards && self.bridge != nil {
+                self.sendEvent(
+                    withName: event.type,
+                    body: convertMXEventToDictionary(event: event)
+                )
+            }
+        }
+
+
+        resolve(["success": true])
+    }
+
+    @objc
+    func unlisten() {
+        if mxSession != nil && globalListener != nil {
+            mxSession.removeListener(globalListener)
+            globalListener = nil
+        }
     }
 
     @objc(loadMessagesInRoom:perPage:initialLoad:resolver:rejecter:)

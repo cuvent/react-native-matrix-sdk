@@ -30,6 +30,7 @@ import org.matrix.androidsdk.rest.model.CreateRoomResponse;
 import org.matrix.androidsdk.rest.model.CreatedEvent;
 import org.matrix.androidsdk.rest.model.Event;
 import org.matrix.androidsdk.rest.model.TokensChunkEvents;
+import org.matrix.androidsdk.rest.model.User;
 import org.matrix.androidsdk.rest.model.login.Credentials;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
      * Used when loading old messages
      */
     private HashMap<String, String> roomPaginationTokens = new HashMap<>();
+    private MXEventListener globalListener;
 
 
     public MatrixSdkModule(ReactApplicationContext reactContext) {
@@ -233,6 +235,45 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
+    public void listen(Promise promise) {
+        if(globalListener == null) {
+            globalListener = new MXEventListener() {
+                @Override
+                public void onLiveEvent(Event event, RoomState roomState) {
+                    sendEvent(event.getType(), convertEventToMap(event));
+                }
+
+                @Override
+                public void onPresenceUpdate(Event event, User user) {
+                    sendEvent(event.getType(), convertEventToMap(event));
+                }
+
+                @Override
+                public void onEventSent(Event event, String prevEventId) {
+                    sendEvent(event.getType(), convertEventToMap(event));
+                }
+            };
+
+            mxSession.getDataHandler().addListener(globalListener);
+        } else {
+            promise.reject(E_MATRIX_ERROR, "You already started listening, only one global listener is supported. You maybe forget to call `unlisten()`");
+            return;
+        }
+
+        WritableMap successMap = Arguments.createMap();
+        successMap.putBoolean("success", true);
+        promise.resolve(successMap);
+    }
+
+    @ReactMethod
+    public void unlisten() {
+        if(globalListener != null && mxSession != null) {
+            mxSession.getDataHandler().removeListener(globalListener);
+            globalListener = null;
+        }
+    }
+
+    @ReactMethod
     public void loadMessagesInRoom(String roomId, int perPage, boolean initialLoad, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
@@ -299,6 +340,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
     @Override
     public void onHostDestroy() {
+        unlisten();
         mxSession.stopEventStream();
     }
 

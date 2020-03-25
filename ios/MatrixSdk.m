@@ -4,7 +4,6 @@
 #import <React/RCTBridgeModule.h>
 #endif
 
-
 // Will expose a RN_MatrixSdk native module to JS
 @interface RCT_EXTERN_REMAP_MODULE(RN_MatrixSdk, RNMatrixSDK, NSObject)
 
@@ -40,6 +39,10 @@ RCT_EXTERN_METHOD(getJoinedRooms:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
 RCT_EXTERN_METHOD(listenToRoom:(NSString *)roomId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(unlistenToRoom:(NSString *)roomId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(listen:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(unlisten)
 
 RCT_EXTERN_METHOD(loadMessagesInRoom:(NSString *)roomId perPage:(nonnull NSNumber *)perPage initialLoad:(BOOL *)initialLoad resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
