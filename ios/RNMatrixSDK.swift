@@ -191,7 +191,7 @@ class RNMatrixSDK: RCTEventEmitter {
                 "name": unNil(value: room?.summary.displayname),
                 "notification_count": unNil(value: room?.summary.notificationCount),
                 "highlight_count": unNil(value: room?.summary.highlightCount),
-                "is_direct": unNil(value: room?.isDirect),
+                "is_direct": unNil(value: room?.summary.isDirect),
                 "last_message": convertMXEventToDictionary(event: lastMessage),
             ]
         })
@@ -270,7 +270,7 @@ class RNMatrixSDK: RCTEventEmitter {
                 "name": unNil(value: room?.summary.displayname),
                 "notification_count": unNil(value: room?.summary.notificationCount),
                 "highlight_count": unNil(value: room?.summary.highlightCount),
-                "is_direct": unNil(value: room?.isDirect),
+                "is_direct": unNil(value: room?.summary.isDirect),
                 "last_message": convertMXEventToDictionary(event: lastMessage),
             ]
         })
