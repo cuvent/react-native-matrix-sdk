@@ -132,7 +132,29 @@ try {
 } catch (e) {
   console.error(e);
 }
-```  
+```
+
+### Listen to global new events 
+
+You can listen to any matrix event here you can imagine. Things like typing, new room invitations
+users leaving rooms etc. 
+After the example you will find a list of all supported events:
+
+```javascript
+  // Add listener for events
+  const matrixGlobalEventEmitter = new NativeEventEmitter(MatrixSDK);
+  // This will notify us about any member changes of all rooms of a user
+  // this includes things like new invitations
+  matrixGlobalEventEmitter.addListener('m.room.member', event => {
+    // do something with the event
+  });
+
+  // We also need to start to listen to the events
+  await MatrixSDK.listen();
+
+  // When we are done listening we should unlisten
+  MatrixSDK.unlisten();
+```
 
 ### Listening to new events in a room
 

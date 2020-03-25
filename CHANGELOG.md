@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha11
+
+* Added listen (and unlisten) API to listen to the overall global events of a user 
+
 ## 1.0.0-alpha10
 
 * Added unlistenToRoom and loadMessagesInRoom API for android 
