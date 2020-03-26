@@ -15,6 +15,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.matrix.androidsdk.HomeServerConnectionConfig;
@@ -87,7 +89,9 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             public void onSuccess(Credentials info) {
                 try {
                     hsConfig.setCredentials(info);
-                    promise.resolve(info.toJson().toString());
+                    JsonElement json = JsonParser.parseString(info.toJson().toString());
+                    WritableMap map = RNJson.convertJsonToMap(json.getAsJsonObject());
+                    promise.resolve(map);
                 } catch (JSONException e) {
                     promise.reject(E_UNEXCPECTED_ERROR, "{\"error\": \"Couldn't parse JSON response\"}");
                 }
