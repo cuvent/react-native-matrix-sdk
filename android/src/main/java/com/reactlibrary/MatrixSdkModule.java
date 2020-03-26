@@ -34,6 +34,7 @@ import org.matrix.androidsdk.rest.model.User;
 import org.matrix.androidsdk.rest.model.login.Credentials;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -202,8 +203,31 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
 //    TODO: getPublicRooms(url: string): Promise<PublicRooms>;
-//
-//    TODO: getLastEventsForAllRooms(): Promise<[MXMessageEvent]>;
+
+
+    @ReactMethod
+    public void getLastEventsForAllRooms(Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        if (!mxSession.getDataHandler().isInitialSyncComplete()) {
+            promise.reject(E_MATRIX_ERROR, "client is setup, but not synced yet. Please start a session first.");
+            return;
+        }
+
+        Collection<Room> rooms = mxSession.getDataHandler().getStore().getRooms();
+        WritableArray roomSummaries = Arguments.createArray();
+        for(Room room : rooms) {
+            roomSummaries.pushMap(
+                    convertRoomToMap(
+                            room
+                    )
+            );
+        }
+        promise.resolve(roomSummaries);
+    }
 
     @ReactMethod
     public void getJoinedRooms(Promise promise) {
