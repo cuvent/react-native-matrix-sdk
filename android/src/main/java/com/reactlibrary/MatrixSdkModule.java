@@ -304,6 +304,16 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
     @ReactMethod
     public void listen(Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        if (!mxSession.getDataHandler().isInitialSyncComplete()) {
+            promise.reject(E_MATRIX_ERROR, "client is setup, but not synced yet. Please start a session first.");
+            return;
+        }
+
         if(globalListener == null) {
             globalListener = new MXEventListener() {
                 @Override

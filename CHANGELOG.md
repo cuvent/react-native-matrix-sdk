@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha14
+
+* Fixed issue where android SDK was crashing when started listening without having started a session.
+
 ## 1.0.0-alpha13
 
 * Fixed issue where credentials returned by `login` were a string instead of an object.
