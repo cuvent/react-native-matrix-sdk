@@ -364,10 +364,6 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             return;
         }
 
-
-        WritableMap successMap = Arguments.createMap();
-        successMap.putBoolean("success", true);
-
         String fromToken = null;
         if(!initialLoad && roomPaginationTokens.get(roomId) != null) {
             fromToken = roomPaginationTokens.get(roomId);
@@ -377,10 +373,11 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             @Override
             public void onSuccess(TokensChunkEvents info) {
                 roomPaginationTokens.put(roomId, info.end);
+                WritableArray msgs = Arguments.createArray();
                 for (Event event : info.chunk) {
-                    sendEvent("matrix.room.backwards", convertEventToMap(event));
+                    msgs.pushMap(convertEventToMap(event));
                 }
-                promise.resolve(successMap);
+                promise.resolve(msgs);
             }
         });
     }

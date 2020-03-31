@@ -16,6 +16,7 @@ declare interface MXSessionAttributes {
 
 declare enum MessageEventType {
   text = "text",
+  mText = 'm.room.message',
   image = "image",
   video = "video",
   file = "file",
@@ -31,7 +32,9 @@ declare interface MXMessageEvent {
   room_id: string;
   sender_id: string;
   age: number;
-  content: string;
+  content: {
+    body: string;
+  };
 }
 
 declare interface MXRoomAttributes {
@@ -81,7 +84,7 @@ declare module 'react-native-matrix-sdk' {
     listenToRoom(roomId: string): Promise<void>;
     listen(): Promise<SuccessResponse>;
     unlisten(): void;
-    loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<void>;
+    loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<[MXMessageEvent]>;
     searchMessagesInRoom(roomId: string, searchTerm: string, nextBatch: string, beforeLimit: string, afterLimit: string);
     getMessages(roomId: string, from: string, direction: string, limit: number): Promise<MessagesFromRoom>;
     sendMessageToRoom(roomId: string, messageType: string, data: any): Promise<SuccessResponse>;
