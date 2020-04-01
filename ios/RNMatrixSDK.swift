@@ -96,22 +96,34 @@ class RNMatrixSDK: RCTEventEmitter {
         // Create a matrix session
         mxSession = MXSession(matrixRestClient: mxRestClient)!
 
-        // Launch mxSession: it will first make an initial sync with the homeserver
-        mxSession.start { response in
+        // Make the matrix session open the file store
+        // This will preload user's messages and other data
+        let store = MXFileStore()
+
+        mxSession.setStore(store) { (response) in
             guard response.isSuccess else {
                 reject(self.E_MATRIX_ERROR, nil, response.error)
                 return
             }
 
-            let user = self.mxSession.myUser
+            // Launch mxSession: it will sync with the homeserver from the last stored data
+            // Then it will listen to new coming events and update its data
+            self.mxSession.start { response in
+                guard response.isSuccess else {
+                    reject(self.E_MATRIX_ERROR, nil, response.error)
+                    return
+                }
 
-            resolve([
-                "user_id": unNil(value: user?.userId),
-                "display_name": unNil(value: user?.displayname),
-                "avatar": unNil(value: user?.avatarUrl),
-                "last_active": unNil(value: user?.lastActiveAgo),
-                "status": unNil(value: user?.statusMsg),
-            ])
+                let user = self.mxSession.myUser
+
+                resolve([
+                    "user_id": unNil(value: user?.userId),
+                    "display_name": unNil(value: user?.displayname),
+                    "avatar": unNil(value: user?.avatarUrl),
+                    "last_active": unNil(value: user?.lastActiveAgo),
+                    "status": unNil(value: user?.statusMsg),
+                ])
+            }
         }
     }
 

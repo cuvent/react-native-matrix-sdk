@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha17
+
+* Android and iOS use now a file store instead of a memory store, which is a performance optimization
+ 
 ## 1.0.0-alpha16
 
 * Changed how `loadMessagesInRoom` works. Instead of needing to register a listener, it now returns the events of the room 
