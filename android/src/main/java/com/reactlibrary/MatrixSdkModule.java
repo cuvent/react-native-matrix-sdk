@@ -24,7 +24,7 @@ import org.matrix.androidsdk.MXDataHandler;
 import org.matrix.androidsdk.MXSession;
 import org.matrix.androidsdk.data.Room;
 import org.matrix.androidsdk.data.RoomState;
-import org.matrix.androidsdk.data.store.MXMemoryStore;
+import org.matrix.androidsdk.data.store.MXFileStore;
 import org.matrix.androidsdk.listeners.MXEventListener;
 import org.matrix.androidsdk.rest.client.LoginRestClient;
 import org.matrix.androidsdk.rest.model.CreateRoomParams;
@@ -104,9 +104,9 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         mxSession = new MXSession.Builder(
                 hsConfig,
                 new MXDataHandler(
-                        // TODO: uses MemoryStore, FileStore maybe better for persistence? (caused issues when trying to use)
-                        new MXMemoryStore(
-                                hsConfig.getCredentials(),
+                        new MXFileStore(
+                                hsConfig,
+                                false,
                                 reactContext.getApplicationContext()
                         ),
                         hsConfig.getCredentials()),
