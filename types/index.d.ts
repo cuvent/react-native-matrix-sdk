@@ -69,7 +69,6 @@ declare module 'react-native-matrix-sdk' {
 
   export interface MatrixSDKStatic extends EventSubscriptionVendor {
     configure(host: string): void;
-    // TODO: actually credentials are returned as string, and not as Credentials Type
     login(username: string, password: string): Promise<MXCredentials>;
     startSession(): Promise<MXSessionAttributes>;
     createRoom(userId: string): Promise<MXRoomAttributes>;
@@ -84,6 +83,14 @@ declare module 'react-native-matrix-sdk' {
     listenToRoom(roomId: string): Promise<void>;
     listen(): Promise<SuccessResponse>;
     unlisten(): void;
+
+    /**
+     * This does not only return messages but all types of events of a room
+     * // TODO: rename
+     * @param roomId
+     * @param perPage number of entries to return max
+     * @param initialLoad when you are first requesting past messages, this needs to be true as it is your initial load request
+     */
     loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<[MXMessageEvent]>;
     searchMessagesInRoom(roomId: string, searchTerm: string, nextBatch: string, beforeLimit: string, afterLimit: string);
     getMessages(roomId: string, from: string, direction: string, limit: number): Promise<MessagesFromRoom>;

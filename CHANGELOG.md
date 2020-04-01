@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha16
+
+* Changed how `loadMessagesInRoom` works. Instead of needing to register a listener, it now returns the events of the room 
+as a promise array `Promise<MXMessageEvents[]>` (docs updated accordingly)
 
 ## 1.0.0-alpha14
 

@@ -176,29 +176,13 @@ Don't forget to `unlisten` when your component dismounts!
   console.log('Subscription to room has been made, Captain!');
 ```
 
-### Getting (past) messages of a room
-
-1. First, we need to add a listener and listen to room events. This listener will receive then 
-the old messages: 
+### Getting (past) messages/events of a room
 
 ```javascript
-  // Add listener for events
-  const matrixRoomTestEmitter = new NativeEventEmitter(MatrixSDK);
-  // Only listen to pas events, thus using 'matrix.room.backwards'
-  matrixRoomTestEmitter.addListener('matrix.room.backwards', event => {
-    if (event.event_type === 'm.room.message') {
-      console.log(event.content.body);
-    }
-  });
-``` 
-
-2. Now we want to load old messages: 
-
-```javascript
-const success = await MatrixSDK.loadMessagesInRoom(roomId, 50, true);
+const events = await MatrixSDK.loadMessagesInRoom(roomId, 50, true);
 // Load further 50 messages
-const success = await MatrixSDK.loadMessagesInRoom(roomId, 50, false);
-```
+const furtherEvents = await MatrixSDK.loadMessagesInRoom(roomId, 50, false);
+``` 
 
 ## Software license
 

@@ -12,6 +12,7 @@ class RNMatrixSDK: RCTEventEmitter {
     var mxHomeServer: URL!
 
     var roomEventsListeners: [String: Any] = [:]
+    var roomPaginationTokens: [String : String] = [:]
     var globalListener: Any?
 
 
@@ -393,40 +394,44 @@ class RNMatrixSDK: RCTEventEmitter {
 
     @objc(loadMessagesInRoom:perPage:initialLoad:resolver:rejecter:)
     func loadMessagesInRoom(roomId: String, perPage: NSNumber, initialLoad: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        var fromToken = ""
+        if(!initialLoad) {
+            fromToken = roomPaginationTokens[roomId] ?? ""
+            if(fromToken.isEmpty) {
+                print("Warning: trying to load not initial messages, but the SDK has no token set for this room currently. You need to run with initialLoad: true first!")
+            }
+        }
+
+        getMessages(roomId: roomId, from: fromToken, direction: "backwards", limit: perPage, resolve: resolve, reject: reject)
+    }
+
+    @objc(getMessages:from:direction:limit:resolver:rejecter:)
+    func getMessages(roomId: String, from: String, direction: String, limit: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(nil, "client is not connected yet", nil)
             return
         }
 
-        let room = mxSession.room(withRoomId: roomId)
+        let roomEventFilter = MXRoomEventFilter()
+        let timelimeDirection = direction == "backwards" ? MXTimelineDirection.backwards : MXTimelineDirection.forwards
 
-        if room == nil {
-            reject(nil, "Room not found", nil)
-            return
-        }
-
-        if roomEventsListeners[roomId] == nil {
-            reject(E_MATRIX_ERROR, "You need to listen to the room first. You will then receive the messages in the event listener of the room!", nil)
-            return
-        }
-
-        if initialLoad {
-            room?.liveTimeline({ (timeline) in
-                timeline?.resetPagination()
-            })
-        }
-
-        room?.liveTimeline({ (timeline) in
-            _ = timeline?.paginate(UInt(perPage), direction: .backwards, onlyFromStore: false) { response in
-                if response.error != nil {
-                    reject(nil, nil, response.error)
-                    return
-                }
-
-                resolve(["success": true])
+        mxSession.matrixRestClient.messages(forRoom: roomId, from: from, direction: timelimeDirection, limit: UInt(truncating: limit), filter: roomEventFilter) { response in
+            if response.error != nil {
+                reject(nil, nil, response.error)
+                return
             }
-        })
 
+            let results = response.value?.chunk.map {
+                $0.map( {
+                    convertMXEventToDictionary(event: $0 as MXEvent)
+                } )
+            }
+
+            // Store pagination token
+            self.roomPaginationTokens[roomId] = response.value?.end
+
+            resolve(results)
+        }
     }
 
     @objc(searchMessagesInRoom:searchTerm:nextBatch:beforeLimit:afterLimit:resolver:rejecter:)
@@ -476,32 +481,6 @@ class RNMatrixSDK: RCTEventEmitter {
                 "next_batch": unNil(value: results.value?.nextBatch),
                 "count": unNil(value: results.value?.count),
                 "results": events,
-            ])
-        }
-    }
-
-    @objc(getMessages:from:direction:limit:resolver:rejecter:)
-    func getMessages(roomId: String, from: String, direction: String, limit: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        if mxSession == nil {
-            reject(nil, "client is not connected yet", nil)
-            return
-        }
-
-        let roomEventFilter = MXRoomEventFilter()
-        let timelimeDirection = direction == "backwards" ? MXTimelineDirection.backwards : MXTimelineDirection.forwards
-
-        mxSession.matrixRestClient.messages(forRoom: roomId, from: from, direction: timelimeDirection, limit: UInt(truncating: limit), filter: roomEventFilter) { response in
-            if response.error != nil {
-                reject(nil, nil, response.error)
-                return
-            }
-
-            let results = response.value?.chunk.map { convertMXEventToDictionary(event: $0 as? MXEvent) }
-
-            resolve([
-                "start": unNil(value: response.value?.start),
-                "end": unNil(value: response.value?.end),
-                "results": results,
             ])
         }
     }
