@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha18
+
+* Corrected `MXRoomAttributes` name from `notificationcount` -> `notification_count`, thus fixing that `undefined is returned`
+
 ## 1.0.0-alpha17
 
 * Android and iOS use now a file store instead of a memory store, which is a performance optimization

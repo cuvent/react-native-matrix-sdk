@@ -40,7 +40,7 @@ declare interface MXMessageEvent {
 declare interface MXRoomAttributes {
   room_id: string;
   name: string;
-  notificationcount: number;
+  notification_count: number;
   highlight_count: number;
   is_direct: boolean;
   last_message: MXMessageEvent;
