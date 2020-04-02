@@ -546,16 +546,15 @@ class RNMatrixSDK: RCTEventEmitter {
         }
 
         // TODO: load pushers first!
-        let bundleID = Bundle.main.bundleIdentifier! + ".ios-prod"
         let tag = calculateTag(session: mxSession)
-        let b64Token = (token.data(using: .utf8)?.base64EncodedString(options: []))
+        let b64Token = (token.data(using: .utf8)?.base64EncodedString())
 
         if b64Token == nil {
             reject(E_UNEXCPECTED_ERROR, "Couldn 't base64 device token!", nil)
             return
         }
 
-        mxSession.matrixRestClient.setPusher(pushKey: b64Token!, kind: MXPusherKind.http, appId: bundleID, appDisplayName: displayName, deviceDisplayName: UIDevice.current.name, profileTag: tag, lang: Locale.current.languageCode ?? "en", data: ["url": pushServiceUrl], append: false) { response in
+        mxSession.matrixRestClient.setPusher(pushKey: b64Token!, kind: MXPusherKind.http, appId: appId, appDisplayName: displayName, deviceDisplayName: UIDevice.current.name, profileTag: tag, lang: Locale.current.languageCode ?? "en", data: ["url": pushServiceUrl], append: false) { response in
             if response.error != nil {
                 reject(nil, nil, response.error)
                 return
