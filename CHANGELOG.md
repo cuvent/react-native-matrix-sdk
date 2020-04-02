@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha20
+
+* Fixed implementation issues with `registerPushNotifications` API
+
 ## 1.0.0-alpha19
 
 * Added `registerPushNotifications` API (android and iOS)

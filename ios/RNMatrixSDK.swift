@@ -546,7 +546,9 @@ class RNMatrixSDK: RCTEventEmitter {
         }
 
         // TODO: load pushers first!
-        mxSession.matrixRestClient.setPusher(pushKey: token, kind: MXPusherKind.http, appId: displayName, appDisplayName: displayName, deviceDisplayName: "TODO-Change-Me", profileTag: "Todo-Calculate-Tag", lang: "de", data: ["url": pushServiceUrl], append: false) { response in
+        let bundleID = Bundle.main.bundleIdentifier ?? displayName
+        let tag = calculateTag(session: mxSession)
+        mxSession.matrixRestClient.setPusher(pushKey: token, kind: MXPusherKind.http, appId: bundleID, appDisplayName: displayName, deviceDisplayName: UIDevice.current.name, profileTag: tag, lang: Locale.current.languageCode ?? "en", data: ["url": pushServiceUrl], append: false) { response in
             if response.error != nil {
                 reject(nil, nil, response.error)
                 return
@@ -557,6 +559,15 @@ class RNMatrixSDK: RCTEventEmitter {
     }
 }
 
+internal func calculateTag(session: MXSession) -> String {
+    var tag = "mobile_" + String(abs(session.myUser.userId.hashValue))
+
+    if(tag.count > 32) {
+        tag = String(abs(tag.hashValue))
+    }
+
+    return tag
+}
 
 internal func unNil(value: Any?) -> Any? {
     guard let value = value else {

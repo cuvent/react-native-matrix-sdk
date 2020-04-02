@@ -462,7 +462,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
         String mPusherAppName = pInfo.packageName;
         String mPusherLang = mContext.getResources().getConfiguration().locale.getLanguage();
-        String mBasePusherDeviceName = "Cuvent_" +Build.MODEL.trim();
+        String mBasePusherDeviceName = Build.MODEL.trim();
 
         mxSession.getPushersRestClient()
                 .addHttpPusher(
@@ -516,7 +516,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
      * @return the profile tag
      */
     private static String computePushTag(final MXSession session) {
-        String tag = "cuvent_mobile_" + Math.abs(session.getMyUserId().hashCode());
+        String tag = "mobile_" + Math.abs(session.getMyUserId().hashCode());
 
         // tag max length : 32 bytes
         if (tag.length() > 32) {
