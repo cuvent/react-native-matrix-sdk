@@ -96,6 +96,15 @@ declare module 'react-native-matrix-sdk' {
     getMessages(roomId: string, from: string, direction: string, limit: number): Promise<MessagesFromRoom>;
     sendMessageToRoom(roomId: string, messageType: string, data: any): Promise<SuccessResponse>;
     sendReadReceipt(roomId: string, eventId: string): Promise<SuccessResponse>;
+
+    /**
+     * Adds a new pusher (service) to the user at the matrix homeserver. The matrix homeserver will
+     * use this pusher service to broadcast (push) notifications to the user's device (using FCM, APNS).
+     * @param appDisplayName
+     * @param pushServiceUrl
+     * @param token (FCM ID, or APNS device token)
+     */
+    registerPushNotifications(appDisplayName: string, pushServiceUrl: string, token: string): Promise<void>;
   }
 
   const MatrixSDK: MatrixSDKStatic;

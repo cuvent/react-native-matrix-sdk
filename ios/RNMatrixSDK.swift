@@ -537,6 +537,24 @@ class RNMatrixSDK: RCTEventEmitter {
             resolve(["success": response.value])
         }
     }
+
+    @objc(registerPushNotifications:pushServiceUrl:token:resolver:rejecter:)
+    func registerPushNotifications(displayName: String, pushServiceUrl: String, token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        // TODO: load pushers first!
+        mxSession.matrixRestClient.setPusher(pushKey: token, kind: MXPusherKind.http, appId: displayName, appDisplayName: displayName, deviceDisplayName: "TODO-Change-Me", profileTag: "Todo-Calculate-Tag", lang: "de", data: ["url": pushServiceUrl], append: false) { response in
+            if response.error != nil {
+                reject(nil, nil, response.error)
+                return
+            }
+
+            resolve(["success": response.value])
+        }
+    }
 }
 
 

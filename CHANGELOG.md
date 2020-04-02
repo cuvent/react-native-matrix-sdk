@@ -1,4 +1,18 @@
 # Changelog
+## 1.0.0-alpha19
+
+* Added `registerPushNotifications` API (android and iOS)
+```typescript
+    /**
+     * Adds a new pusher (service) to the user at the matrix homeserver. The matrix homeserver will
+     * use this pusher service to broadcast (push) notifications to the user's device (using FCM, APNS).
+     * @param appDisplayName
+     * @param pushServiceUrl
+     * @param token (FCM ID, or APNS device token)
+     */
+    registerPushNotifications(appDisplayName: string, pushServiceUrl: string, token: string): Promise<void>;
+```
+
 ## 1.0.0-alpha18
 
 * Corrected `MXRoomAttributes` name from `notificationcount` -> `notification_count`, thus fixing that `undefined is returned`
