@@ -460,7 +460,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             promise.reject(e);
             return;
         }
-        String mPusherAppName = pInfo.packageName;
+        String mPusherAppName = pInfo.packageName + ".android";
         String mPusherLang = mContext.getResources().getConfiguration().locale.getLanguage();
         String mBasePusherDeviceName = Build.MODEL.trim();
 

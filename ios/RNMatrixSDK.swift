@@ -546,7 +546,7 @@ class RNMatrixSDK: RCTEventEmitter {
         }
 
         // TODO: load pushers first!
-        let bundleID = Bundle.main.bundleIdentifier ?? displayName
+        let bundleID = Bundle.main.bundleIdentifier! + ".ios"
         let tag = calculateTag(session: mxSession)
         mxSession.matrixRestClient.setPusher(pushKey: token, kind: MXPusherKind.http, appId: bundleID, appDisplayName: displayName, deviceDisplayName: UIDevice.current.name, profileTag: tag, lang: Locale.current.languageCode ?? "en", data: ["url": pushServiceUrl], append: false) { response in
             if response.error != nil {

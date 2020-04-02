@@ -1,4 +1,9 @@
 # Changelog
+## 1.0.0-alpha21
+
+* Changing name of application when doing `registerPushNotifications` to 
+yourpackagename.(android|ios)
+
 ## 1.0.0-alpha20
 
 * Fixed implementation issues with `registerPushNotifications` API
