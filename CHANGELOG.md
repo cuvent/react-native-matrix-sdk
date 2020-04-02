@@ -1,4 +1,9 @@
 # Changelog
+## 1.0.0-alpha22
+
+* base64 encoding device token when doing iOS push notification registration 
+* add `appId` parameter to `registerPushNotification`
+
 ## 1.0.0-alpha21
 
 * Changing name of application when doing `registerPushNotifications` to 

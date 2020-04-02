@@ -1,8 +1,6 @@
 package com.reactlibrary;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -410,7 +408,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
-    public void registerPushNotifications(String displayName, String pushServiceUrl, String token, Promise promise) {
+    public void registerPushNotifications(String displayName, String appId, String pushServiceUrl, String token, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
             return;
@@ -424,7 +422,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                         List<Pusher> pushers = info.pushers;
                         if(pushers.isEmpty()) {
                             // register push notifications
-                            addHttpPusher(displayName, pushServiceUrl, token, promise);
+                            addHttpPusher(displayName, appId, pushServiceUrl, token, promise);
                         } else {
                             // check pushers:
                             boolean needToRegister = true;
@@ -436,7 +434,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                                 }
                             }
                             if(needToRegister) {
-                                addHttpPusher(displayName, pushServiceUrl, token, promise);
+                                addHttpPusher(displayName, appId, pushServiceUrl, token, promise);
                             } else {
                                 // pusher already setup :)
                                 promise.resolve(null);
@@ -450,24 +448,15 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
      * internal, assumes that you have checked that session is active.
      * Implementation from {https://github.com/vector-im/riot-android/blob/develop/vector/src/main/java/im/vector/push/PushManager.java}
      */
-    private void addHttpPusher(String displayName, String pushServiceUrl, String token, Promise promise) {
+    private void addHttpPusher(String displayName, String appId, String pushServiceUrl, String token, Promise promise) {
         Context mContext = reactContext.getApplicationContext();
-        PackageInfo pInfo = null;
-        try {
-            pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            promise.reject(e);
-            return;
-        }
-        String mPusherAppName = pInfo.packageName + ".android";
         String mPusherLang = mContext.getResources().getConfiguration().locale.getLanguage();
         String mBasePusherDeviceName = Build.MODEL.trim();
 
         mxSession.getPushersRestClient()
                 .addHttpPusher(
                         token,
-                        mPusherAppName,
+                        appId,
                         computePushTag(mxSession),
                         mPusherLang,
                         displayName,

@@ -101,10 +101,11 @@ declare module 'react-native-matrix-sdk' {
      * Adds a new pusher (service) to the user at the matrix homeserver. The matrix homeserver will
      * use this pusher service to broadcast (push) notifications to the user's device (using FCM, APNS).
      * @param appDisplayName
+     * @param appId
      * @param pushServiceUrl
      * @param token (FCM ID, or APNS device token)
      */
-    registerPushNotifications(appDisplayName: string, pushServiceUrl: string, token: string): Promise<void>;
+    registerPushNotifications(appDisplayName: string, appId: string, pushServiceUrl: string, token: string): Promise<void>;
   }
 
   const MatrixSDK: MatrixSDKStatic;

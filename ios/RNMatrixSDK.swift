@@ -538,17 +538,24 @@ class RNMatrixSDK: RCTEventEmitter {
         }
     }
 
-    @objc(registerPushNotifications:pushServiceUrl:token:resolver:rejecter:)
-    func registerPushNotifications(displayName: String, pushServiceUrl: String, token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc(registerPushNotifications:appId:pushServiceUrl:token:resolver:rejecter:)
+    func registerPushNotifications(displayName: String, appId: String, pushServiceUrl: String, token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(E_MATRIX_ERROR, "client is not connected yet", nil)
             return
         }
 
         // TODO: load pushers first!
-        let bundleID = Bundle.main.bundleIdentifier! + ".ios"
+        let bundleID = Bundle.main.bundleIdentifier! + ".ios-prod"
         let tag = calculateTag(session: mxSession)
-        mxSession.matrixRestClient.setPusher(pushKey: token, kind: MXPusherKind.http, appId: bundleID, appDisplayName: displayName, deviceDisplayName: UIDevice.current.name, profileTag: tag, lang: Locale.current.languageCode ?? "en", data: ["url": pushServiceUrl], append: false) { response in
+        let b64Token = (token.data(using: .utf8)?.base64EncodedString(options: []))
+
+        if b64Token == nil {
+            reject(E_UNEXCPECTED_ERROR, "Couldn 't base64 device token!", nil)
+            return
+        }
+
+        mxSession.matrixRestClient.setPusher(pushKey: b64Token!, kind: MXPusherKind.http, appId: bundleID, appDisplayName: displayName, deviceDisplayName: UIDevice.current.name, profileTag: tag, lang: Locale.current.languageCode ?? "en", data: ["url": pushServiceUrl], append: false) { response in
             if response.error != nil {
                 reject(nil, nil, response.error)
                 return
