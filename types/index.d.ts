@@ -98,6 +98,12 @@ declare module 'react-native-matrix-sdk' {
     sendReadReceipt(roomId: string, eventId: string): Promise<SuccessResponse>;
 
     /**
+     * Marks the whole room as read.
+     * @param roomId
+     */
+    markRoomAsRead(roomId: string): Promise<void>;
+
+    /**
      * Adds a new pusher (service) to the user at the matrix homeserver. The matrix homeserver will
      * use this pusher service to broadcast (push) notifications to the user's device (using FCM, APNS).
      * @param appDisplayName

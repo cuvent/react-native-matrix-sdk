@@ -387,6 +387,56 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
+    public void sendReadReceipt(String roomId, String eventId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId, false);
+
+        if(room == null) {
+            promise.reject(E_MATRIX_ERROR, "Room not found");
+            return;
+        }
+
+        Event event = mxSession.getDataHandler().getStore().getEvent(eventId, roomId);
+        if(event == null) {
+            promise.reject(E_MATRIX_ERROR, "Event not found");
+            return;
+        }
+
+        room.sendReadReceipt(event, new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void markRoomAsRead(String roomId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId, false);
+
+        if(room == null) {
+            promise.reject(E_MATRIX_ERROR, "Room not found");
+            return;
+        }
+
+        room.markAllAsRead(new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
+            }
+        });
+    }
+
+    @ReactMethod
     public void sendMessageToRoom(String roomId, String messageType, ReadableMap data, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");

@@ -1,4 +1,10 @@
 # Changelog
+## 1.0.0-alpha24
+
+* Fixed issue in iOS where `getLastEventsForAllRooms` caused a crash
+* Added `sendReadReceipt(roomId: string, eventId: string)` in android
+* Added `markRoomAsRead(roomId)` 
+
 ## 1.0.0-alpha22
 
 * base64 encoding device token when doing iOS push notification registration 

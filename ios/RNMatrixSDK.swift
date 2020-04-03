@@ -247,7 +247,7 @@ class RNMatrixSDK: RCTEventEmitter {
         resolve(mxSession.unreadEventTypes)
     }
 
-    @objc(getRecentEvents:rejecter:)
+    @objc(getLastEventsForAllRooms:rejecter:)
     func getLastEventsForAllRooms(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(nil, "client is not connected yet", nil)
@@ -519,6 +519,23 @@ class RNMatrixSDK: RCTEventEmitter {
 
             resolve(["success": response.value])
         }
+    }
+
+    @objc(markRoomAsRead:resolver:rejecter:)
+    func markRoomAsRead(roomId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(nil, "client is not connected yet", nil)
+            return
+        }
+
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(nil, "Room not found", nil)
+            return
+        }
+
+        room?.markAllAsRead()
     }
 
     @objc(sendReadReceipt:eventId:resolver:rejecter:)

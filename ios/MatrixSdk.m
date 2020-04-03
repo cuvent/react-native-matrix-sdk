@@ -54,6 +54,8 @@ RCT_EXTERN_METHOD(sendMessageToRoom:(NSString *)roomId messageType:(NSString *)m
 
 RCT_EXTERN_METHOD(sendReadReceipt:(NSString *)roomId eventId:(NSString *)eventId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(markRoomAsRead:(NSString *)roomId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(registerPushNotifications:(NSString *)displayName appId:(NSString *)appId pushServiceUrl:(NSString *)pushServiceUrl token:(NSString *)token resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 @end
