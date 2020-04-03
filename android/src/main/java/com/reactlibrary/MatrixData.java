@@ -12,7 +12,11 @@ import static com.reactlibrary.MatrixSdkModule.TAG;
 
 public class MatrixData {
     public static WritableMap convertEventToMap(Event matrixEvent) {
-        long age = matrixEvent.age != null ? matrixEvent.age : 0L;
+        Long age = matrixEvent.age;
+        if(age == null) {
+            age = System.currentTimeMillis() - matrixEvent.getOriginServerTs();
+        }
+
         WritableMap map = Arguments.createMap();
         map.putString("event_type", matrixEvent.type);
         map.putString("event_id", matrixEvent.eventId);

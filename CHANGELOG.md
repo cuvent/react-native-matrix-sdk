@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha25
+
+* Fixed issue in android where age was 0
+
 ## 1.0.0-alpha24
 
 * Fixed issue in iOS where `getLastEventsForAllRooms` caused a crash
