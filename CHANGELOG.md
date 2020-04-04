@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha26
+
+* Added event types
+
 ## 1.0.0-alpha25
 
 * Fixed issue in android where age was 0
