@@ -6,4 +6,4 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
-//#import <MatrixSDK/MatrixSDK.h>
+#import "Utilities.h"

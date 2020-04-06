@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha28
+
+* Fixed issue on iOS related to device token encoding with base64
+
 ## 1.0.0-alpha26
 
 * Added event types
