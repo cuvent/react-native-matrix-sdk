@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha29
+
+* Added `setUserDisplayName(displayName: string)` to SDK
+
 ## 1.0.0-alpha28
 
 * Fixed issue on iOS related to device token encoding with base64

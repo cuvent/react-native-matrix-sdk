@@ -576,6 +576,20 @@ class RNMatrixSDK: RCTEventEmitter {
             resolve(["success": response.value])
         }
     }
+
+    @objc(setUserDisplayName:resolver:rejecter:)
+    func setUserDisplayName(displayName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        mxSession.myUser.setDisplayName(displayName, success: {
+            resolve(true)
+        }) { (error) in
+            reject(self.E_MATRIX_ERROR, "Failed to update display name", error)
+        }
+    }
 }
 
 internal func calculateTag(session: MXSession) -> String {
