@@ -112,6 +112,12 @@ declare module 'react-native-matrix-sdk' {
      * @param token (FCM ID, or APNS device token)
      */
     registerPushNotifications(appDisplayName: string, appId: string, pushServiceUrl: string, token: string): Promise<void>;
+
+    /**
+     * Updates the user's display name
+     * @param displayName new display name
+     */
+    setUserDisplayName(displayName: string): Promise<void>;
   }
 
   const MatrixSDK: MatrixSDKStatic;

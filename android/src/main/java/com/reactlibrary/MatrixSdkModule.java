@@ -494,6 +494,29 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                 });
     }
 
+    //* ******************************************
+    //*  PROFILE
+    //* ******************************************
+
+    @ReactMethod
+    public void setUserDisplayName(String displayName, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        mxSession.getProfileApiClient().updateDisplayname(
+                mxSession.getMyUserId(),
+                displayName,
+                new RejectingOnErrorApiCallback<Void>(promise) {
+                    @Override
+                    public void onSuccess(Void info) {
+                        promise.resolve(null);
+                    }
+                }
+        );
+    }
+
     /**
      * internal, assumes that you have checked that session is active.
      * Implementation from {https://github.com/vector-im/riot-android/blob/develop/vector/src/main/java/im/vector/push/PushManager.java}
