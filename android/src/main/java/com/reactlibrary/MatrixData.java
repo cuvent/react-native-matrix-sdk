@@ -12,17 +12,13 @@ import static com.reactlibrary.MatrixSdkModule.TAG;
 
 public class MatrixData {
     public static WritableMap convertEventToMap(Event matrixEvent) {
-        Long age = matrixEvent.age;
-        if(age == null) {
-            age = System.currentTimeMillis() - matrixEvent.getOriginServerTs();
-        }
-
         WritableMap map = Arguments.createMap();
         map.putString("event_type", matrixEvent.type);
         map.putString("event_id", matrixEvent.eventId);
         map.putString("room_id", matrixEvent.roomId);
         map.putString("sender_id", matrixEvent.sender);
-        map.putDouble("age", age);
+        map.putDouble("age", matrixEvent.age != null ? matrixEvent.age : Long.MAX_VALUE - 1);
+        map.putDouble("ts", matrixEvent.originServerTs);
         map.putMap("content", RNJson.convertJsonToMap(matrixEvent.getContentAsJsonObject()));
         return map;
     }

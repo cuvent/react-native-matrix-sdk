@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha30
+
+* Added `ts` (server timestamp) to events (don't use `age`, use `ts`)
+
 ## 1.0.0-alpha29
 
 * Added `setUserDisplayName(displayName: string)` to SDK

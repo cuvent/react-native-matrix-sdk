@@ -618,6 +618,7 @@ internal func convertMXEventToDictionary(event: MXEvent?) -> [String: Any] {
         "sender_id": unNil(value: event?.sender) as Any,
         "age": unNil(value: event?.age) as Any,
         "content": unNil(value: event?.content) as Any,
+        "ts": unNil(value: event?.originServerTs) as Any,
     ]
 }
 
