@@ -590,6 +590,23 @@ class RNMatrixSDK: RCTEventEmitter {
             reject(self.E_MATRIX_ERROR, "Failed to update display name", error)
         }
     }
+
+    @objc(sendTyping:isTyping:timeout:resolver:rejecter:)
+    func sendTyping(roomId: String, isTyping: Bool, timeout: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        mxSession.room(withRoomId: roomId)?.sendTypingNotification(typing: isTyping, timeout: TimeInterval(timeout.doubleValue), completion: { (response: MXResponse<Void>) in
+            if response.error != nil {
+                reject(nil, nil, response.error)
+                return
+            }
+
+            resolve(["success": response.value])
+        })
+    }
 }
 
 internal func calculateTag(session: MXSession) -> String {

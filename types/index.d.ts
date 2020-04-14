@@ -129,6 +129,14 @@ declare module 'react-native-matrix-sdk' {
      * @param displayName new display name
      */
     setUserDisplayName(displayName: string): Promise<void>;
+
+    /**
+     * Sends m.typing event into the specified room that the user is typing.
+     * @param roomId
+     * @param isTyping whether the user is typing or not
+     * @param timeout in ms
+     */
+    sendTyping(roomId: string, isTyping: boolean, timeout: number): Promise<void>;
   }
 
   const MatrixSDK: MatrixSDKStatic;

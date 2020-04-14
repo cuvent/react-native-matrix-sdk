@@ -517,6 +517,27 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         );
     }
 
+    //* ******************************************
+    //*  TYPING
+    //* ******************************************
+
+    @ReactMethod
+    public void sendTyping(String roomId, boolean isTyping, int timeout, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId);
+        room.sendTypingNotification(isTyping, timeout, new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
+            }
+        });
+
+    }
+
     /**
      * internal, assumes that you have checked that session is active.
      * Implementation from {https://github.com/vector-im/riot-android/blob/develop/vector/src/main/java/im/vector/push/PushManager.java}

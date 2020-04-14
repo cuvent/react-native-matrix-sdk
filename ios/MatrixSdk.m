@@ -60,4 +60,6 @@ RCT_EXTERN_METHOD(registerPushNotifications:(NSString *)displayName appId:(NSStr
 
 RCT_EXTERN_METHOD(setUserDisplayName:(NSString *)displayName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(sendTyping:(NSString *)roomId isTyping:(nonnull BOOL *)isTyping timeout:(nonnull NSNumber *)timeout resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
 @end
