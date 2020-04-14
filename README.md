@@ -186,5 +186,5 @@ const furtherEvents = await MatrixSDK.loadMessagesInRoom(roomId, 50, false);
 
 ## Software license
 
-This is considered shared-code, and is currently not allowed to be used in commercial products as it is distibuted  
-under the [Attribution-NonCommercial-ShareAlike 2.0 Generic (CC BY-NC-SA 2.0)](https://creativecommons.org/licenses/by-nc-sa/2.0/) license.
+The use of this library is governed by a [Creative Commons license](https://creativecommons.org/licenses/by-nc-sa/2.0/). You can use, modify, copy, and distribute this edition as long as it’s *for non-commercial use*, you provide attribution, and share under a similar license. https://github.com/hannojg/react-native-matrix-sdk/blob/master/LICENSE.md
+<br />You can't use this library in a commercial product.
