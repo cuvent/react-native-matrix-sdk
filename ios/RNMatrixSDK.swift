@@ -597,8 +597,9 @@ class RNMatrixSDK: RCTEventEmitter {
             reject(E_MATRIX_ERROR, "client is not connected yet", nil)
             return
         }
+        let timeoutConv = isTyping ? TimeInterval(timeout.doubleValue) : 1
 
-        mxSession.room(withRoomId: roomId)?.sendTypingNotification(typing: isTyping, timeout: TimeInterval(timeout.doubleValue), completion: { (response: MXResponse<Void>) in
+        mxSession.room(withRoomId: roomId)?.sendTypingNotification(typing: isTyping, timeout: timeoutConv, completion: { (response: MXResponse<Void>) in
             if response.error != nil {
                 reject(nil, nil, response.error)
                 return
