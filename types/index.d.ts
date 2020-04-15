@@ -14,20 +14,8 @@ declare interface MXSessionAttributes {
   status: string;
 }
 
-declare enum MessageEventType {
-  text = "text",
-  mText = 'm.room.message',
-  image = "image",
-  video = "video",
-  file = "file",
-  audio = "audio",
-  emote = "emote",
-  location = "location",
-}
-
-
 declare interface MXMessageEvent {
-  event_type: MessageEventType;
+  event_type: string;
   event_id: string;
   room_id: string;
   sender_id: string;

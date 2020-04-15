@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha34
+
+* Removed event types, and set string for field event.event_type to support custom events
+
 ## 1.0.0-alpha33
 
 * Added `setAdditionalEventTypes(types: string[]): void` for adding a list of custom events that a client needs to support (iOS only, android doesn't need this)
