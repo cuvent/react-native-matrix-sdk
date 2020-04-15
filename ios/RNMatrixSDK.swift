@@ -1,6 +1,5 @@
 import Foundation
 import SwiftMatrixSDK
-//import Utilities
 
 @objc(RNMatrixSDK)
 class RNMatrixSDK: RCTEventEmitter {
@@ -15,11 +14,12 @@ class RNMatrixSDK: RCTEventEmitter {
     var roomEventsListeners: [String: Any] = [:]
     var roomPaginationTokens: [String : String] = [:]
     var globalListener: Any?
+    var additionalTypes: [String] = []
 
 
     @objc
     override func supportedEvents() -> [String]! {
-        return ["matrix.room.backwards",
+        var supportedTypes = ["matrix.room.backwards",
                 "matrix.room.forwards",
                 "m.fully_read",
                 MXEventType.roomName.identifier,
@@ -56,8 +56,15 @@ class RNMatrixSDK: RCTEventEmitter {
                 MXEventType.keyVerificationAccept.identifier,
                 MXEventType.keyVerificationKey.identifier,
                 MXEventType.keyVerificationMac.identifier,
-                MXEventType.keyVerificationCancel.identifier]
+            MXEventType.keyVerificationCancel.identifier]
+        // add any additional types the user provided
+        supportedTypes += additionalTypes
+        return supportedTypes;
+    }
 
+    @objc(setAdditionalEventTypes:)
+    func setAdditionalEventTypes(types: [String]) {
+        additionalTypes = types
     }
 
 
@@ -607,6 +614,21 @@ class RNMatrixSDK: RCTEventEmitter {
 
             resolve(["success": response.value])
         })
+    }
+
+    @objc(updatePresence:resolver:rejecter:)
+    func updatePresence(isOnline: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        let presence: MXPresence = isOnline ? MXPresenceOnline : MXPresenceOffline
+        mxSession.myUser.setPresence(presence, andStatusMessage: "", success: {
+            resolve(["success": "true"])
+        }) { (error) in
+            reject(self.E_MATRIX_ERROR, "Failed to update presence", error)
+        }
     }
 }
 

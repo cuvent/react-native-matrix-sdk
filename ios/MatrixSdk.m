@@ -16,6 +16,8 @@ RCT_EXTERN_METHOD(supportedEvents)
 
 RCT_EXTERN_METHOD(constantsToExport)
 
+RCT_EXTERN_METHOD(setAdditionalEventTypes:(NSArray *)types)
+
 RCT_EXTERN_METHOD(configure:(NSString *)url)
 
 RCT_EXTERN_METHOD(login:(nonnull NSString *)username password:(nonnull NSString *)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
@@ -61,5 +63,7 @@ RCT_EXTERN_METHOD(registerPushNotifications:(NSString *)displayName appId:(NSStr
 RCT_EXTERN_METHOD(setUserDisplayName:(NSString *)displayName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(sendTyping:(NSString *)roomId isTyping:(nonnull BOOL *)isTyping timeout:(nonnull NSNumber *)timeout resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(updatePresence:(nonnull BOOL *)isOnline resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 @end

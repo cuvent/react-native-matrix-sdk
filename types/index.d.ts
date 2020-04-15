@@ -79,6 +79,14 @@ declare module 'react-native-matrix-sdk' {
   import {EventSubscriptionVendor} from "react-native";
 
   export interface MatrixSDKStatic extends EventSubscriptionVendor {
+    /**
+     * Call this to add additional custom event types that your client
+     * needs to support. This is for iOS only, android will emit the custom events
+     * with out the need for calling this.
+     * @param types
+     */
+    setAdditionalEventTypes(types: string[]): void;
+
     configure(host: string): void;
     login(username: string, password: string): Promise<MXCredentials>;
     startSession(): Promise<MXSessionAttributes>;

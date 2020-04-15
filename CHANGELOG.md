@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha33
+
+* Added `setAdditionalEventTypes(types: string[]): void` for adding a list of custom events that a client needs to support (iOS only, android doesn't need this)
+
 ## 1.0.0-alpha31
 
 * Added typing: `sendTyping(roomId: string, isTyping: boolean, timeout: number): Promise<void>`
