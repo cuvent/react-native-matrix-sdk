@@ -54,7 +54,7 @@ RCT_EXTERN_METHOD(getMessages:(NSString *)roomId from:(nonnull NSString *)from d
 
 RCT_EXTERN_METHOD(sendMessageToRoom:(NSString *)roomId messageType:(NSString *)messageType data:(NSDictionary *)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(sendEventToRoom:(NSString *)roomId eventType:(NSString *)messageType data:(NSDictionary *)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(sendEventToRoom:(NSString *)roomId eventType:(NSString *)eventType data:(NSDictionary *)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(sendReadReceipt:(NSString *)roomId eventId:(NSString *)eventId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 

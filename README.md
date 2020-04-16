@@ -10,7 +10,7 @@ The most recent versions are the `*-alpha*` versions, don't use any other!
 
 ## Getting started
 
-`$ npm install react-native-matrix-sdk@1.0.0-alpha32 --save`
+`$ npm install react-native-matrix-sdk@1.0.0-alpha36 --save`
 
 ### Mostly automatic installation
 
