@@ -1,4 +1,8 @@
 # Changelog
+## 1.0.0-alpha35
+
+* Added `sendEventToRoom(roomId: string, eventType: string, data: any)` API 
+
 ## 1.0.0-alpha34
 
 * Removed event types, and set string for field event.event_type to support custom events

@@ -101,7 +101,23 @@ declare module 'react-native-matrix-sdk' {
     loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<[MXMessageEvent]>;
     searchMessagesInRoom(roomId: string, searchTerm: string, nextBatch: string, beforeLimit: string, afterLimit: string);
     getMessages(roomId: string, from: string, direction: string, limit: number): Promise<MessagesFromRoom>;
+
+    /**
+     * Sends an m.room.message event to a room
+     * @param roomId
+     * @param messageType the message type (text, image, video, etc - see specifications)
+     * @param data
+     */
     sendMessageToRoom(roomId: string, messageType: string, data: any): Promise<SuccessResponse>;
+
+    /**
+     * Sends an event to a room
+     * @param roomId
+     * @param eventType
+     * @param data
+     */
+    sendEventToRoom(roomId: string, eventType: string, data: any): Promise<SuccessResponse>;
+
     sendReadReceipt(roomId: string, eventId: string): Promise<SuccessResponse>;
 
     /**

@@ -529,6 +529,30 @@ class RNMatrixSDK: RCTEventEmitter {
         }
     }
 
+    @objc(sendEventToRoom:eventType:data:resolver:rejecter:)
+    func sendEventToRoom(roomId: String, eventType: String, data: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(nil, "client is not connected yet", nil)
+            return
+        }
+
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(nil, "Room not found", nil)
+            return
+        }
+
+        mxSession.matrixRestClient.sendEvent(toRoom: roomId, eventType: MXEventType.custom(eventType), content: data, txnId: UUID().uuidString) { (response) in
+            if(response.isFailure) {
+                reject(self.E_MATRIX_ERROR, nil, response.error)
+                return
+            }
+
+            resolve(["success": response.value])
+        }
+    }
+
     @objc(markRoomAsRead:resolver:rejecter:)
     func markRoomAsRead(roomId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {

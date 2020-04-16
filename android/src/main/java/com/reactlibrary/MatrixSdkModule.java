@@ -436,6 +436,9 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         });
     }
 
+    //* ******************************************
+    //*  SENDING EVENTS
+    //* ******************************************
     @ReactMethod
     public void sendMessageToRoom(String roomId, String messageType, ReadableMap data, Promise promise) {
         if (mxSession == null) {
@@ -458,38 +461,23 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
-    public void registerPushNotifications(String displayName, String appId, String pushServiceUrl, String token, Promise promise) {
+    public void sendEventToRoom(String roomId, String eventType, ReadableMap data, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
             return;
         }
 
-        // First check whether a pusher is already registered
-        mxSession.getPushersRestClient()
-                .getPushers(new RejectingOnErrorApiCallback<PushersResponse>(promise) {
+        mxSession.getRoomsApiClient().sendEventToRoom(
+                UUID.randomUUID().toString(),
+                roomId,
+                eventType,
+                RNJson.convertMapToJson(data),
+                new RejectingOnErrorApiCallback<CreatedEvent>(promise) {
                     @Override
-                    public void onSuccess(PushersResponse info) {
-                        List<Pusher> pushers = info.pushers;
-                        if(pushers.isEmpty()) {
-                            // register push notifications
-                            addHttpPusher(displayName, appId, pushServiceUrl, token, promise);
-                        } else {
-                            // check pushers:
-                            boolean needToRegister = true;
-                            for(Pusher pusher : pushers) {
-                                Log.d(TAG, pusher.toString());
-                                if(pusher.pushkey.equals(token)) {
-                                    needToRegister = false;
-                                    break;
-                                }
-                            }
-                            if(needToRegister) {
-                                addHttpPusher(displayName, appId, pushServiceUrl, token, promise);
-                            } else {
-                                // pusher already setup :)
-                                promise.resolve(null);
-                            }
-                        }
+                    public void onSuccess(CreatedEvent info) {
+                        WritableMap map = Arguments.createMap();
+                        map.putString("success", info.eventId);
+                        promise.resolve(map);
                     }
                 });
     }
@@ -538,6 +526,47 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
     }
 
+    //* ******************************************
+    //*  PUSH NOTIFICATIONS
+    //* ******************************************
+
+    @ReactMethod
+    public void registerPushNotifications(String displayName, String appId, String pushServiceUrl, String token, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        // First check whether a pusher is already registered
+        mxSession.getPushersRestClient()
+                .getPushers(new RejectingOnErrorApiCallback<PushersResponse>(promise) {
+                    @Override
+                    public void onSuccess(PushersResponse info) {
+                        List<Pusher> pushers = info.pushers;
+                        if(pushers.isEmpty()) {
+                            // register push notifications
+                            addHttpPusher(displayName, appId, pushServiceUrl, token, promise);
+                        } else {
+                            // check pushers:
+                            boolean needToRegister = true;
+                            for(Pusher pusher : pushers) {
+                                Log.d(TAG, pusher.toString());
+                                if(pusher.pushkey.equals(token)) {
+                                    needToRegister = false;
+                                    break;
+                                }
+                            }
+                            if(needToRegister) {
+                                addHttpPusher(displayName, appId, pushServiceUrl, token, promise);
+                            } else {
+                                // pusher already setup :)
+                                promise.resolve(null);
+                            }
+                        }
+                    }
+                });
+    }
+
     /**
      * internal, assumes that you have checked that session is active.
      * Implementation from {https://github.com/vector-im/riot-android/blob/develop/vector/src/main/java/im/vector/push/PushManager.java}
@@ -567,6 +596,10 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                 );
     }
 
+    //* ******************************************
+    //*  LIFE CYCLE
+    //* ******************************************
+
     @Override
     public void onHostResume() {
 
@@ -583,6 +616,9 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         mxSession.stopEventStream();
     }
 
+    //* ******************************************
+    //*  UTILITIES
+    //* ******************************************
 
     private void sendEvent(String eventName,
                            @Nullable WritableMap params) {
