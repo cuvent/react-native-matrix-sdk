@@ -1,4 +1,9 @@
 # Changelog
+## 1.0.0-alpha37
+
+* (Android) Fixed matrix olm dependency by manually including it, thus fixing build issues, related to this issue:
+https://github.com/jitpack/jitpack.io/issues/3908#issuecomment-526767673
+
 ## 1.0.0-alpha35
 
 * Added `sendEventToRoom(roomId: string, eventType: string, data: any)` API 
