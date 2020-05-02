@@ -78,8 +78,43 @@ declare module 'react-native-matrix-sdk' {
     configure(host: string): void;
     login(username: string, password: string): Promise<MXCredentials>;
     startSession(): Promise<MXSessionAttributes>;
-    createRoom(userId: string): Promise<MXRoomAttributes>;
+
+    /**
+     * Creates a new room with userIds
+     * @param userIds doesn't need to include the user's own ID
+     * @param isDirect shall be used when a room with only two participants is a 1-1 conversation
+     */
+    createRoom(userIds: Array<string>, isDirect: boolean): Promise<MXRoomAttributes>;
     joinRoom(roomId: string): Promise<MXRoomAttributes>;
+
+    /**
+     * roomId to leave
+     * @param roomId
+     */
+    leaveRoom(roomId: string): Promise<void>;
+
+    /**
+     * Remove a certain user from a room
+     * @param roomId
+     * @param userId
+     */
+    removeUserFromRoom(roomId: string, userId: string): Promise<void>;
+
+    /**
+     * Set a user of a room to admin (kick, ban, invite)
+     * @param roomId
+     * @param userId
+     * @param setAdmin
+     */
+    changeUserPermission(roomId: string, userId: string, setAdmin: boolean): Promise<void>;
+
+    /**
+     * Invited a new user to a room
+     * @param roomId
+     * @param userId
+     */
+    inviteUserToRoom(roomId: string, userId: string): Promise<void>;
+
     getInvitedRooms(): Promise<[MXRoomAttributes]>;
     getPublicRooms(url: string): Promise<[PublicRoom]>;
     getUnreadEventTypes(): Promise<[string]>;

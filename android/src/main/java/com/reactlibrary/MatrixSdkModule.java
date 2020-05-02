@@ -13,6 +13,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -150,19 +151,29 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
-    public void createRoom(String userId, Promise promise) {
+    public void createRoom(ReadableArray userIds, boolean isDirect, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
             return;
         }
 
-        List<String> participants = new ArrayList<>();
-        participants.add(userId);
+        // Convert readableArray to List<String>
+        List<String> userIdsList = new ArrayList<>();
+        if (userIds != null) {
+            int size = userIds.size();
+            for (int j = 0; j < size; j++) {
+                if (!userIds.isNull(j)) {
+                    userIdsList.add(userIds.getString(j));
+                }
+            }
+        } else {
+            promise.reject(E_MATRIX_ERROR, "no userIds provided");
+        }
 
         CreateRoomParams params = new CreateRoomParams();
-        params.invitedUserIds = participants;
-        params.isDirect = true;
+        params.invitedUserIds = userIdsList;
         params.visibility = "private";
+        params.isDirect = isDirect;
 
         mxSession.getRoomsApiClient().createRoom(params, new RejectingOnErrorApiCallback<CreateRoomResponse>(promise) {
             @Override
@@ -187,6 +198,88 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                 promise.resolve(
                         convertRoomToMap(mxSession.getDataHandler().getRoom(roomId))
                 );
+            }
+        });
+    }
+
+    @ReactMethod
+    public void leaveRoom(String roomId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId, false);
+        if(room == null) {
+          promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't leave");
+          return;
+        }
+
+        room.leave(new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void removeUserFromRoom(String roomId, String userId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId, false);
+        if(room == null) {
+            promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
+            return;
+        }
+        room.kick(userId, null, new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void changeUserPermission(String roomId, String userId, boolean setAdmin, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId, false);
+        if(room == null) {
+            promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
+            return;
+        }
+        int power = setAdmin ? 50 : 0;
+        room.updateUserPowerLevels(userId, power, new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void inviteUserToRoom(String roomId, String userId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId, false);
+        if(room == null) {
+            promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
+            return;
+        }
+        room.invite(mxSession, userId, new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
             }
         });
     }
