@@ -5,7 +5,7 @@ import SwiftMatrixSDK
 class RNMatrixSDK: RCTEventEmitter {
     var E_MATRIX_ERROR: String! = "E_MATRIX_ERROR";
     var E_NETWORK_ERROR: String! = "E_NETWORK_ERROR";
-    var E_UNEXCPECTED_ERROR: String! = "E_UNKNOWN_ERROR";
+    var E_UNEXPECTED_ERROR: String! = "E_UNKNOWN_ERROR";
 
     var mxSession: MXSession!
     var mxCredentials: MXCredentials!
@@ -135,14 +135,16 @@ class RNMatrixSDK: RCTEventEmitter {
         }
     }
 
-    @objc(createRoom:resolver:rejecter:)
-    func createRoom(userId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+
+    @objc(createRoomGroup:isDirect:resolver:rejecter:)
+    func createRoom(userIds: NSArray, isDirect: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(nil, "client is not connected yet", nil)
             return
         }
 
-        mxSession.createRoom(name: nil, visibility: nil, alias: nil, topic: nil, invite: [userId], invite3PID: nil, isDirect: true, preset: nil) { response in
+        let arrayUserIds: [String] = userIds.compactMap({ $0 as? String })
+        mxSession.createRoom(name: nil, visibility: MXRoomDirectoryVisibility.private, alias: nil, topic: nil, invite: arrayUserIds, invite3PID: nil, isDirect: false, preset: nil) { response in
             if response.isSuccess {
                 let roomId = response.value?.roomId
                 let roomName = response.value?.summary.displayname
@@ -193,6 +195,100 @@ class RNMatrixSDK: RCTEventEmitter {
                 reject(nil, nil, response.error)
             }
         }
+    }
+
+    @objc(leaveRoom:resolver:rejecter:)
+    func leaveRoom(roomId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(E_MATRIX_ERROR, "Room not found", nil)
+            return
+        }
+
+        room?.leave(completion: { (response) in
+            if response.isFailure {
+                reject(self.E_MATRIX_ERROR, "Failed to leave room", response.error)
+                return;
+            }
+            resolve(nil)
+        })
+    }
+
+    @objc(removeUserFromRoom:userId:resolver:rejecter:)
+    func removeUserFromRoom(roomId: String, userId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(E_MATRIX_ERROR, "Room not found", nil)
+            return
+        }
+
+        room?.kickUser(userId, reason: "", completion: { (response) in
+            if response.isFailure {
+                reject(self.E_MATRIX_ERROR, "Failed to remove user from room", response.error)
+                return;
+            }
+            resolve(nil)
+        })
+    }
+
+    @objc(changeUserPermission:userId:setAdmin:resolver:rejecter:)
+    func changeUserPermission(roomId: String, userId: String, setAdmin: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(E_MATRIX_ERROR, "Room not found", nil)
+            return
+        }
+
+        let power = setAdmin ? 50 : 0
+        room?.setPowerLevel(ofUser: userId, powerLevel: power, completion: { (response) in
+            if response.isFailure {
+                reject(self.E_MATRIX_ERROR, "Failed to make user admin for room", response.error)
+                return;
+            }
+            resolve(nil)
+        })
+    }
+
+    @objc(addUserToRoom:userId:resolver:rejecter:)
+    func addUserToRoom(roomId: String, userId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(E_MATRIX_ERROR, "Room not found", nil)
+            return
+        }
+
+        let invite: MXRoomInvitee = MXRoomInvitee.userId(userId)
+        room?.invite(invite, completion: { (response) in
+            if response.isFailure {
+                reject(self.E_MATRIX_ERROR, "Failed to invite user to room", response.error)
+                return;
+            }
+            resolve(nil)
+        })
     }
 
     @objc(getInvitedRooms:rejecter:)

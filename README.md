@@ -10,7 +10,7 @@ The most recent versions are the `*-alpha*` versions, don't use any other!
 
 ## Getting started
 
-`$ npm install react-native-matrix-sdk@1.0.0-alpha36 --save`
+`$ npm install react-native-matrix-sdk@1.0.0-alpha39 --save`
 
 ### Mostly automatic installation
 
@@ -107,7 +107,8 @@ cd ios/ && pod install && cd ..
 
 ## Usage
 
-Various use cases: 
+For up to date API capabilities check the types file: https://github.com/hannojg/react-native-matrix-sdk/blob/master/types/index.d.ts
+Various use cases: (**Attention: the following section isn't updated**)
 
 ```javascript
 import MatrixSdk from 'react-native-matrix-sdk';

@@ -1,4 +1,13 @@
 # Changelog
+
+## 1.0.0-alpha39
+
+* Added leaveRoom
+* Added removeUserFromRoom
+* Added changeUserPermission
+* Added addUserToRoom
+* Changed createRoom signature to support multiple participants: `createRoom(userIds: Array<string>, isDirect: boolean): Promise<MXRoomAttributes>;`
+
 ## 1.0.0-alpha37
 
 * (Android) Fixed matrix olm dependency by manually including it, thus fixing build issues, related to this issue:
