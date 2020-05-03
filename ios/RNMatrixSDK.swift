@@ -136,7 +136,7 @@ class RNMatrixSDK: RCTEventEmitter {
     }
 
 
-    @objc(createRoomGroup:isDirect:resolver:rejecter:)
+    @objc(createRoom:isDirect:resolver:rejecter:)
     func createRoom(userIds: NSArray, isDirect: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(nil, "client is not connected yet", nil)

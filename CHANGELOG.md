@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha40
+
+* Fixed issue in iOS with `createRoom`
+
 ## 1.0.0-alpha39
 
 * Added leaveRoom
