@@ -31,9 +31,7 @@ declare interface MXMessageEvent {
    *  from the client.
    */
   ts: number;
-  content: {
-    body: string;
-  };
+  content: any;
 }
 
 declare interface MXRoomAttributes {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha41
+
+* Fixed issue in android where creating a room with `isDirect` didn't work correctly
+* Fixed that message content can be `any`.
+
 ## 1.0.0-alpha40
 
 * Fixed issue in iOS with `createRoom`

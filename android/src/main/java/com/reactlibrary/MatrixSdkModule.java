@@ -174,15 +174,25 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         params.invitedUserIds = userIdsList;
         params.visibility = "private";
         params.isDirect = isDirect;
-
-        mxSession.getRoomsApiClient().createRoom(params, new RejectingOnErrorApiCallback<CreateRoomResponse>(promise) {
-            @Override
-            public void onSuccess(CreateRoomResponse info) {
-                promise.resolve(
-                        convertRoomToMap(mxSession.getDataHandler().getRoom(info.roomId))
-                );
-            }
-        });
+        if (!isDirect) {
+            mxSession.getRoomsApiClient().createRoom(params, new RejectingOnErrorApiCallback<CreateRoomResponse>(promise) {
+                @Override
+                public void onSuccess(CreateRoomResponse info) {
+                    promise.resolve(
+                            convertRoomToMap(mxSession.getDataHandler().getRoom(info.roomId))
+                    );
+                }
+            });
+        } else {
+            mxSession.createDirectMessageRoom(userIdsList.get(0), new RejectingOnErrorApiCallback<String>(promise) {
+                @Override
+                public void onSuccess(String info) {
+                    promise.resolve(
+                            convertRoomToMap(mxSession.getDataHandler().getRoom(info))
+                    );
+                }
+            });
+        }
     }
 
     @ReactMethod
@@ -210,9 +220,9 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
         Room room = mxSession.getDataHandler().getRoom(roomId, false);
-        if(room == null) {
-          promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't leave");
-          return;
+        if (room == null) {
+            promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't leave");
+            return;
         }
 
         room.leave(new RejectingOnErrorApiCallback<Void>(promise) {
@@ -231,7 +241,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
         Room room = mxSession.getDataHandler().getRoom(roomId, false);
-        if(room == null) {
+        if (room == null) {
             promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
             return;
         }
@@ -251,7 +261,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
         Room room = mxSession.getDataHandler().getRoom(roomId, false);
-        if(room == null) {
+        if (room == null) {
             promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
             return;
         }
@@ -272,7 +282,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
         Room room = mxSession.getDataHandler().getRoom(roomId, false);
-        if(room == null) {
+        if (room == null) {
             promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
             return;
         }
@@ -292,8 +302,8 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
         WritableArray rooms = Arguments.createArray();
-        for(Room room : mxSession.getDataHandler().getStore().getRooms()) {
-            if(room.isInvited()) {
+        for (Room room : mxSession.getDataHandler().getStore().getRooms()) {
+            if (room.isInvited()) {
                 rooms.pushMap(
                         convertRoomToMap(room)
                 );
@@ -320,7 +330,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
         Collection<Room> rooms = mxSession.getDataHandler().getStore().getRooms();
         WritableArray roomSummaries = Arguments.createArray();
-        for(Room room : rooms) {
+        for (Room room : rooms) {
             roomSummaries.pushMap(
                     convertRoomToMap(
                             room
@@ -411,7 +421,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             return;
         }
 
-        if(globalListener == null) {
+        if (globalListener == null) {
             globalListener = new MXEventListener() {
                 @Override
                 public void onLiveEvent(Event event, RoomState roomState) {
@@ -442,7 +452,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
     @ReactMethod
     public void unlisten() {
-        if(globalListener != null && mxSession != null) {
+        if (globalListener != null && mxSession != null) {
             mxSession.getDataHandler().removeListener(globalListener);
             globalListener = null;
         }
@@ -462,7 +472,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
         String fromToken = null;
-        if(!initialLoad && roomPaginationTokens.get(roomId) != null) {
+        if (!initialLoad && roomPaginationTokens.get(roomId) != null) {
             fromToken = roomPaginationTokens.get(roomId);
         }
 
@@ -488,13 +498,13 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
         Room room = mxSession.getDataHandler().getRoom(roomId, false);
 
-        if(room == null) {
+        if (room == null) {
             promise.reject(E_MATRIX_ERROR, "Room not found");
             return;
         }
 
         Event event = mxSession.getDataHandler().getStore().getEvent(eventId, roomId);
-        if(event == null) {
+        if (event == null) {
             promise.reject(E_MATRIX_ERROR, "Event not found");
             return;
         }
@@ -516,7 +526,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
         Room room = mxSession.getDataHandler().getRoom(roomId, false);
 
-        if(room == null) {
+        if (room == null) {
             promise.reject(E_MATRIX_ERROR, "Room not found");
             return;
         }
@@ -636,20 +646,20 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                     @Override
                     public void onSuccess(PushersResponse info) {
                         List<Pusher> pushers = info.pushers;
-                        if(pushers.isEmpty()) {
+                        if (pushers.isEmpty()) {
                             // register push notifications
                             addHttpPusher(displayName, appId, pushServiceUrl, token, promise);
                         } else {
                             // check pushers:
                             boolean needToRegister = true;
-                            for(Pusher pusher : pushers) {
+                            for (Pusher pusher : pushers) {
                                 Log.d(TAG, pusher.toString());
-                                if(pusher.pushkey.equals(token)) {
+                                if (pusher.pushkey.equals(token)) {
                                     needToRegister = false;
                                     break;
                                 }
                             }
-                            if(needToRegister) {
+                            if (needToRegister) {
                                 addHttpPusher(displayName, appId, pushServiceUrl, token, promise);
                             } else {
                                 // pusher already setup :)
