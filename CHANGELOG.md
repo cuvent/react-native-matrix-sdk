@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha42
+
+* Fixed issue on iOS where room was not set to `isDirect` although `true` was passed as argument. 
+
 ## 1.0.0-alpha41
 
 * Fixed issue in android where creating a room with `isDirect` didn't work correctly
