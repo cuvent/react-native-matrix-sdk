@@ -24,7 +24,7 @@ RCT_EXTERN_METHOD(login:(nonnull NSString *)username password:(nonnull NSString 
 
 RCT_EXTERN_METHOD(startSession:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(createRoom:(NSArray *)userIds isDirect:(nonnull BOOL *)isDirect resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(createRoom:(NSArray *)userIds isDirect:(nonnull BOOL *)isDirect isTrustedPrivateChat:(nonnull BOOL *)isTrustedPrivateChat resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(joinRoom:(NSString *)roomId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 

@@ -151,7 +151,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
-    public void createRoom(ReadableArray userIds, boolean isDirect, Promise promise) {
+    public void createRoom(ReadableArray userIds, boolean isDirect, boolean isTrustedPrivateChat, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
             return;
@@ -174,6 +174,10 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         params.invitedUserIds = userIdsList;
         params.visibility = "private";
         params.isDirect = isDirect;
+        if (isTrustedPrivateChat) {
+            params.preset = "trusted_private_chat";
+        }
+
         if (!isDirect) {
             mxSession.getRoomsApiClient().createRoom(params, new RejectingOnErrorApiCallback<CreateRoomResponse>(promise) {
                 @Override

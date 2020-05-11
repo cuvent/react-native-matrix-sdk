@@ -81,8 +81,9 @@ declare module 'react-native-matrix-sdk' {
      * Creates a new room with userIds
      * @param userIds doesn't need to include the user's own ID
      * @param isDirect shall be used when a room with only two participants is a 1-1 conversation
+     * @param isTrustedPrivateChat join_rules is set to invite. history_visibility is set to shared. All invitees are given the same power level as the room creator.
      */
-    createRoom(userIds: Array<string>, isDirect: boolean): Promise<MXRoomAttributes>;
+    createRoom(userIds: Array<string>, isDirect: boolean, isTrustedPrivateChat: boolean): Promise<MXRoomAttributes>;
     joinRoom(roomId: string): Promise<MXRoomAttributes>;
 
     /**

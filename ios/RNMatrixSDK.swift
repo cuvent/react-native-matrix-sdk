@@ -136,15 +136,20 @@ class RNMatrixSDK: RCTEventEmitter {
     }
 
 
-    @objc(createRoom:isDirect:resolver:rejecter:)
-    func createRoom(userIds: NSArray, isDirect: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc(createRoom:isDirect:isTrustedPrivateChat:resolver:rejecter:)
+    func createRoom(userIds: NSArray, isDirect: Bool, isTrustedPrivateChat: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(nil, "client is not connected yet", nil)
             return
         }
 
+        var preset: MXRoomPreset? = nil
+        if isTrustedPrivateChat {
+            preset = MXRoomPreset.trustedPrivateChat
+        }
+
         let arrayUserIds: [String] = userIds.compactMap({ $0 as? String })
-        mxSession.createRoom(name: nil, visibility: MXRoomDirectoryVisibility.private, alias: nil, topic: nil, invite: arrayUserIds, invite3PID: nil, isDirect: isDirect, preset: nil) { response in
+        mxSession.createRoom(name: nil, visibility: MXRoomDirectoryVisibility.private, alias: nil, topic: nil, invite: arrayUserIds, invite3PID: nil, isDirect: isDirect, preset: preset) { response in
             if response.isSuccess {
                 let roomId = response.value?.roomId
                 let roomName = response.value?.summary.displayname

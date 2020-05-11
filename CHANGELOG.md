@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0-alpha44
+
+* Changed signature for room creation to: `createRoom(userIds: Array<string>, isDirect: boolean, isTrustedPrivateChat: boolean): Promise<MXRoomAttributes>;`
+  <br />Trusted chats are: 
+  ```text
+  isTrustedPrivateChat: join_rules is set to invite. history_visibility is set to shared. All invitees are given the same power level as the room creator.```
+
 ## 1.0.0-alpha43
 
 * Fixed issue where changeUserPermission to admin was only promoting user to moderator.
