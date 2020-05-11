@@ -265,7 +265,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
             return;
         }
-        int power = setAdmin ? 50 : 0;
+        int power = setAdmin ? 100 : 0;
         room.updateUserPowerLevels(userId, power, new RejectingOnErrorApiCallback<Void>(promise) {
             @Override
             public void onSuccess(Void info) {

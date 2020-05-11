@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha43
+
+* Fixed issue where changeUserPermission to admin was only promoting user to moderator.
+
 ## 1.0.0-alpha42
 
 * Fixed issue on iOS where room was not set to `isDirect` although `true` was passed as argument. 

@@ -257,7 +257,7 @@ class RNMatrixSDK: RCTEventEmitter {
             return
         }
 
-        let power = setAdmin ? 50 : 0
+        let power = setAdmin ? 100 : 0
         room?.setPowerLevel(ofUser: userId, powerLevel: power, completion: { (response) in
             if response.isFailure {
                 reject(self.E_MATRIX_ERROR, "Failed to make user admin for room", response.error)
