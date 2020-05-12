@@ -272,8 +272,8 @@ class RNMatrixSDK: RCTEventEmitter {
         })
     }
 
-    @objc(addUserToRoom:userId:resolver:rejecter:)
-    func addUserToRoom(roomId: String, userId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc(inviteUserToRoom:userId:resolver:rejecter:)
+    func inviteUserToRoom(roomId: String, userId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(E_MATRIX_ERROR, "client is not connected yet", nil)
             return

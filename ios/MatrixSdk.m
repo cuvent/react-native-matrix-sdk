@@ -34,7 +34,7 @@ RCT_EXTERN_METHOD(removeUserFromRoom:(NSString *)roomId userId:(NSString *)userI
 
 RCT_EXTERN_METHOD(changeUserPermission:(NSString *)roomId userId:(NSString *)userId setAdmin:(nonnull BOOL *)setAdmin resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(addUserToRoom:(NSString *)roomId userId:(NSString *)userId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(inviteUserToRoom:(NSString *)roomId userId:(NSString *)userId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(getPublicRooms:(NSString *)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
