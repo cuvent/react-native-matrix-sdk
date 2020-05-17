@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha46
+
+* Added `getLeftRooms`
+
 ## 1.0.0-alpha44
 
 * Changed signature for room creation to: `createRoom(userIds: Array<string>, isDirect: boolean, isTrustedPrivateChat: boolean): Promise<MXRoomAttributes>;`

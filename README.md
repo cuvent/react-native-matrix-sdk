@@ -10,7 +10,7 @@ The most recent versions are the `*-alpha*` versions, don't use any other!
 
 ## Getting started
 
-`$ npm install react-native-matrix-sdk@1.0.0-alpha44 --save`
+`$ npm install react-native-matrix-sdk@1.0.0-alpha46 --save`
 
 ### Mostly automatic installation
 
@@ -73,7 +73,7 @@ Add the following to your pods file
   pod 'OLMKit', :modular_headers => true
   pod 'Realm', :modular_headers => true
   pod 'libbase58', :modular_headers => true
-  pod 'SwiftMatrixSDK'
+  pod 'SwiftMatrixSDK', :git => 'https://github.com/hannojg/matrix-ios-sdk.git', :branch => 'develop'
 ```
 
 Before you can run `pod install` you need to setup a Swift/Objective-C briding header, as this library uses 

@@ -149,7 +149,13 @@ class RNMatrixSDK: RCTEventEmitter {
         }
 
         let arrayUserIds: [String] = userIds.compactMap({ $0 as? String })
-        mxSession.createRoom(name: nil, visibility: MXRoomDirectoryVisibility.private, alias: nil, topic: nil, invite: arrayUserIds, invite3PID: nil, isDirect: isDirect, preset: preset) { response in
+        let params: MXRoomCreationParameters = MXRoomCreationParameters()
+        params.isDirect = isDirect
+        params.visibility = MXRoomDirectoryVisibility.private.identifier
+        params.inviteArray = arrayUserIds
+        params.preset = preset?.identifier
+
+        mxSession.createRoom(parameters: params) { response in
             if response.isSuccess {
                 resolve(convertMXRoomTodictionary(room: response.value))
             } else {
