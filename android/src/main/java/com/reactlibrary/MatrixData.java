@@ -30,6 +30,7 @@ public class MatrixData {
         map.putInt("notification_count", room.getNotificationCount());
         map.putInt("highlight_count", room.getHighlightCount());
         map.putBoolean("is_direct", room.isDirect());
+        map.putBoolean("isLeft", room.isLeft());
 
         if(room.getRoomSummary() != null) {
             map.putMap("last_message", convertEventToMap(

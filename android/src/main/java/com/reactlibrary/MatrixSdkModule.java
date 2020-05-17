@@ -367,6 +367,55 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
+    public void getLeftRooms(Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+
+        if (mxSession.getDataHandler().isInitialSyncComplete()) {
+            WritableArray rooms = Arguments.createArray();
+            if (!mxSession.getDataHandler().areLeftRoomsSynced()) {
+                Log.d(TAG, "Syncing left rooms first");
+                // we need to get left rooms first
+                mxSession.getDataHandler().retrieveLeftRooms(new RejectingOnErrorApiCallback<Void>(promise) {
+                    @Override
+                    public void onSuccess(Void info) {
+                        getLeftRooms(promise);
+                    }
+                });
+                return;
+            }
+
+            for (Room room : mxSession.getDataHandler().getLeftRooms()) {
+                rooms.pushMap(
+                        convertRoomToMap(room)
+                );
+            }
+
+            promise.resolve(rooms);
+        } else {
+            promise.reject(E_MATRIX_ERROR, "Initial sync ain't completed yet, please start session first");
+        }
+    }
+
+    @ReactMethod
+    public void forgetRoom(String roomId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        mxSession.getDataHandler().getRoom(roomId).forget(new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
+            }
+        });
+    }
+
+    @ReactMethod
     public void listenToRoom(String roomId, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
