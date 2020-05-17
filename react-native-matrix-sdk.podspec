@@ -21,6 +21,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "SwiftMatrixSDK", :git => "https://github.com/hannojg/matrix-ios-sdk.git"
+  s.dependency "SwiftMatrixSDK"
 
 end
