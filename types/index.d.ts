@@ -41,6 +41,7 @@ declare interface MXRoomAttributes {
   highlight_count: number;
   is_direct: boolean;
   last_message: MXMessageEvent;
+  isLeft: boolean;
 }
 
 declare interface PublicRoom {
@@ -119,6 +120,7 @@ declare module 'react-native-matrix-sdk' {
     getUnreadEventTypes(): Promise<[string]>;
     getLastEventsForAllRooms(): Promise<[MXMessageEvent]>;
     getJoinedRooms(): Promise<[MXRoomAttributes]>;
+    getLeftRooms(): Promise<MXRoomAttributes[]>;
     listenToRoom(roomId: string): Promise<void>;
     unlistenToRoom(roomId: string): Promise<void>;
     listenToRoom(roomId: string): Promise<void>;

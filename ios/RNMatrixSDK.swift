@@ -116,7 +116,7 @@ class RNMatrixSDK: RCTEventEmitter {
 
             // Launch mxSession: it will sync with the homeserver from the last stored data
             // Then it will listen to new coming events and update its data
-            self.mxSession.start { response in
+            self.mxSession.start(withSyncFilter: MXFilterJSONModel.init(fromJSON: filterLeftRooms), completion: { (response) in
                 guard response.isSuccess else {
                     reject(self.E_MATRIX_ERROR, nil, response.error)
                     return
@@ -131,7 +131,7 @@ class RNMatrixSDK: RCTEventEmitter {
                     "last_active": unNil(value: user?.lastActiveAgo),
                     "status": unNil(value: user?.statusMsg),
                 ])
-            }
+            })
         }
     }
 
@@ -151,21 +151,7 @@ class RNMatrixSDK: RCTEventEmitter {
         let arrayUserIds: [String] = userIds.compactMap({ $0 as? String })
         mxSession.createRoom(name: nil, visibility: MXRoomDirectoryVisibility.private, alias: nil, topic: nil, invite: arrayUserIds, invite3PID: nil, isDirect: isDirect, preset: preset) { response in
             if response.isSuccess {
-                let roomId = response.value?.roomId
-                let roomName = response.value?.summary.displayname
-                let notificationCount = response.value?.summary.notificationCount
-                let highlightCount = response.value?.summary.highlightCount
-                let isDirect = response.value?.isDirect
-                let lastMessage = response.value?.summary.lastMessageEvent
-
-                resolve([
-                    "room_id": unNil(value: roomId),
-                    "name": unNil(value: roomName),
-                    "notification_count": unNil(value: notificationCount),
-                    "highlight_count": unNil(value: highlightCount),
-                    "is_direct": unNil(value: isDirect),
-                    "last_message": convertMXEventToDictionary(event: lastMessage),
-                ])
+                resolve(convertMXRoomTodictionary(room: response.value))
             } else {
                 reject(nil, nil, response.error)
             }
@@ -181,21 +167,7 @@ class RNMatrixSDK: RCTEventEmitter {
 
         mxSession.joinRoom(roomId) { response in
             if response.isSuccess {
-                let roomId = response.value?.roomId
-                let roomName = response.value?.summary.displayname
-                let notificationCount = response.value?.summary.localUnreadEventCount
-                let highlightCount = response.value?.summary.highlightCount
-                let isDirect = response.value?.isDirect
-                let lastMessage = response.value?.summary.lastMessageEvent
-
-                resolve([
-                    "room_id": unNil(value: roomId),
-                    "name": unNil(value: roomName),
-                    "notification_count": unNil(value: notificationCount),
-                    "highlight_count": unNil(value: highlightCount),
-                    "is_direct": unNil(value: isDirect),
-                    "last_message": convertMXEventToDictionary(event: lastMessage),
-                ])
+                resolve(convertMXRoomTodictionary(room: response.value))
             } else {
                 reject(nil, nil, response.error)
             }
@@ -306,16 +278,8 @@ class RNMatrixSDK: RCTEventEmitter {
         let rooms = mxSession.invitedRooms().map({
             (r: MXRoom) -> [String: Any?] in
             let room = mxSession.room(withRoomId: r.roomId)
-            let lastMessage = room?.summary.lastMessageEvent
 
-            return [
-                "room_id": unNil(value: room?.roomId),
-                "name": unNil(value: room?.summary.displayname),
-                "notification_count": unNil(value: room?.summary.notificationCount),
-                "highlight_count": unNil(value: room?.summary.highlightCount),
-                "is_direct": unNil(value: room?.summary.isDirect),
-                "last_message": convertMXEventToDictionary(event: lastMessage),
-            ]
+            return convertMXRoomTodictionary(room: room)
         })
 
         resolve(rooms)
@@ -385,19 +349,62 @@ class RNMatrixSDK: RCTEventEmitter {
         let rooms = mxSession.rooms.map({
             (r: MXRoom) -> [String: Any?] in
             let room = mxSession.room(withRoomId: r.roomId)
-            let lastMessage = room?.summary.lastMessageEvent
-
-            return [
-                "room_id": unNil(value: room?.roomId),
-                "name": unNil(value: room?.summary.displayname),
-                "notification_count": unNil(value: room?.summary.notificationCount),
-                "highlight_count": unNil(value: room?.summary.highlightCount),
-                "is_direct": unNil(value: room?.summary.isDirect),
-                "last_message": convertMXEventToDictionary(event: lastMessage),
-            ]
+            return convertMXRoomTodictionary(room: room)
         })
 
         resolve(rooms)
+    }
+
+    @objc(getLeftRooms:rejecter:)
+    func getLeftRooms(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(nil, "client is not connected yet", nil)
+            return
+        }
+
+        let model: MXFilterJSONModel  = MXFilterJSONModel.init(fromJSON: filterLeftRooms)
+
+        mxSession.matrixRestClient.setFilter(model, success: { (response) in
+            self.mxSession.matrixRestClient.sync(fromToken: nil, serverTimeout: 10, clientTimeout: 30000, setPresence: nil, filterId: response) { (roomFilterRes) in
+                if roomFilterRes.isSuccess {
+                    if roomFilterRes.value?.rooms.leave == nil {
+                        resolve([])
+                        return
+                    }
+                    var rooms: [MXRoom] = [MXRoom]()
+                    roomFilterRes.value?.rooms.leave.keys.forEach({ (roomId) in
+                        print("Found left room with ID " + roomId);
+
+                        var room = self.mxSession.room(withRoomId: roomId)
+
+                        if room == nil {
+                            room = self.mxSession.getOrCreateRoom(roomId, notify: false)
+
+                            let roomSync = roomFilterRes.value?.rooms.leave[roomId]
+                            room?.liveTimeline({ (liveTimeline) in
+                                room?.handleJoinedRoomSync(roomSync)
+                                room?.summary.handleJoinedRoomSync(roomSync)
+                            })
+                        }
+
+                        rooms.append(room!)
+                    })
+
+                    var roomsAsDict: [[String: Any?]] = [[String: Any?]]()
+                    if rooms.count > 0 {
+                        roomsAsDict = rooms.map({ (room) -> [String: Any?] in
+                            return convertMXRoomTodictionary(room: room)
+                        })
+                    }
+                    resolve(roomsAsDict)
+                } else {
+                    reject(self.E_MATRIX_ERROR, "Can't get left rooms", roomFilterRes.error);
+                }
+            }
+            //print("Created filter with id " + (response ?? "failed to get ID :thinking_face:"));
+        }) { (error) in
+            reject(self.E_MATRIX_ERROR, "Can't set filter to get left rooms", error);
+        }
     }
 
     @objc(listenToRoom:resolver:rejecter:)
@@ -774,6 +781,20 @@ internal func unNil(value: Any?) -> Any? {
     return value
 }
 
+internal func convertMXRoomTodictionary(room: MXRoom?) -> [String: Any?] {
+     let lastMessage = room?.summary?.lastMessageEvent ?? nil
+     let isLeft = room?.summary.membership == MXMembership.leave
+
+     return [
+         "room_id": unNil(value: room?.roomId),
+         "name": unNil(value: room?.summary.displayname),
+         "notification_count": unNil(value: room?.summary.notificationCount),
+         "highlight_count": unNil(value: room?.summary.highlightCount),
+         "is_direct": unNil(value: room?.summary.isDirect),
+         "last_message": convertMXEventToDictionary(event: lastMessage),
+         "isLeft": isLeft,
+     ]
+}
 
 internal func convertMXEventToDictionary(event: MXEvent?) -> [String: Any] {
     return [
@@ -805,3 +826,15 @@ internal func convertStringToMXMessageType(type: String) -> MXMessageType {
         return MXMessageType.text
     }
 }
+
+let filterLeftRooms: [String: Any] = [
+    "room": [
+        "timeline": [
+            "limit": 1
+        ],
+        "include_leave": true,
+        "state": [
+            "lazy_load_members": true
+        ]
+    ]
+];
