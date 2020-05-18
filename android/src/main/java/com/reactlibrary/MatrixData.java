@@ -6,6 +6,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 
 import org.matrix.androidsdk.data.Room;
+import org.matrix.androidsdk.data.RoomSummary;
 import org.matrix.androidsdk.rest.model.Event;
 
 import static com.reactlibrary.MatrixSdkModule.TAG;
@@ -32,10 +33,13 @@ public class MatrixData {
         map.putBoolean("is_direct", room.isDirect());
         map.putBoolean("isLeft", room.isLeft());
 
-        if(room.getRoomSummary() != null) {
-            map.putMap("last_message", convertEventToMap(
-                    room.getRoomSummary().getLatestReceivedEvent()
-            ));
+        RoomSummary summary = room.getRoomSummary();
+        if (summary == null) {
+            summary = room.getStore().getSummary(room.getRoomId());
+        }
+
+        if(summary != null) {
+            map.putMap("last_message", convertEventToMap(summary.getLatestReceivedEvent()));
         } else {
             Log.d(TAG, "Room summary was empty, thus we couldn't fetch latest event");
             map.putNull("last_message");
