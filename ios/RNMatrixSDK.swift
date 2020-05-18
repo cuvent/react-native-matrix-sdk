@@ -20,43 +20,43 @@ class RNMatrixSDK: RCTEventEmitter {
     @objc
     override func supportedEvents() -> [String]! {
         var supportedTypes = ["matrix.room.backwards",
-                "matrix.room.forwards",
-                "m.fully_read",
-                MXEventType.roomName.identifier,
-                MXEventType.roomTopic.identifier,
-                MXEventType.roomAvatar.identifier,
-                MXEventType.roomMember.identifier,
-                MXEventType.roomCreate.identifier,
-                MXEventType.roomJoinRules.identifier,
-                MXEventType.roomPowerLevels.identifier,
-                MXEventType.roomAliases.identifier,
-                MXEventType.roomCanonicalAlias.identifier,
-                MXEventType.roomEncrypted.identifier,
-                MXEventType.roomEncryption.identifier,
-                MXEventType.roomGuestAccess.identifier,
-                MXEventType.roomHistoryVisibility.identifier,
-                MXEventType.roomKey.identifier,
-                MXEventType.roomForwardedKey.identifier,
-                MXEventType.roomKeyRequest.identifier,
-                MXEventType.roomMessage.identifier,
-                MXEventType.roomMessageFeedback.identifier,
-                MXEventType.roomRedaction.identifier,
-                MXEventType.roomThirdPartyInvite.identifier,
-                MXEventType.roomTag.identifier,
-                MXEventType.presence.identifier,
-                MXEventType.typing.identifier,
-                MXEventType.callInvite.identifier,
-                MXEventType.callCandidates.identifier,
-                MXEventType.callAnswer.identifier,
-                MXEventType.callHangup.identifier,
-                MXEventType.reaction.identifier,
-                MXEventType.receipt.identifier,
-                MXEventType.roomTombStone.identifier,
-                MXEventType.keyVerificationStart.identifier,
-                MXEventType.keyVerificationAccept.identifier,
-                MXEventType.keyVerificationKey.identifier,
-                MXEventType.keyVerificationMac.identifier,
-            MXEventType.keyVerificationCancel.identifier]
+                              "matrix.room.forwards",
+                              "m.fully_read",
+                              MXEventType.roomName.identifier,
+                              MXEventType.roomTopic.identifier,
+                              MXEventType.roomAvatar.identifier,
+                              MXEventType.roomMember.identifier,
+                              MXEventType.roomCreate.identifier,
+                              MXEventType.roomJoinRules.identifier,
+                              MXEventType.roomPowerLevels.identifier,
+                              MXEventType.roomAliases.identifier,
+                              MXEventType.roomCanonicalAlias.identifier,
+                              MXEventType.roomEncrypted.identifier,
+                              MXEventType.roomEncryption.identifier,
+                              MXEventType.roomGuestAccess.identifier,
+                              MXEventType.roomHistoryVisibility.identifier,
+                              MXEventType.roomKey.identifier,
+                              MXEventType.roomForwardedKey.identifier,
+                              MXEventType.roomKeyRequest.identifier,
+                              MXEventType.roomMessage.identifier,
+                              MXEventType.roomMessageFeedback.identifier,
+                              MXEventType.roomRedaction.identifier,
+                              MXEventType.roomThirdPartyInvite.identifier,
+                              MXEventType.roomTag.identifier,
+                              MXEventType.presence.identifier,
+                              MXEventType.typing.identifier,
+                              MXEventType.callInvite.identifier,
+                              MXEventType.callCandidates.identifier,
+                              MXEventType.callAnswer.identifier,
+                              MXEventType.callHangup.identifier,
+                              MXEventType.reaction.identifier,
+                              MXEventType.receipt.identifier,
+                              MXEventType.roomTombStone.identifier,
+                              MXEventType.keyVerificationStart.identifier,
+                              MXEventType.keyVerificationAccept.identifier,
+                              MXEventType.keyVerificationKey.identifier,
+                              MXEventType.keyVerificationMac.identifier,
+                              MXEventType.keyVerificationCancel.identifier]
         // add any additional types the user provided
         supportedTypes += additionalTypes
         return supportedTypes;
@@ -116,7 +116,8 @@ class RNMatrixSDK: RCTEventEmitter {
 
             // Launch mxSession: it will sync with the homeserver from the last stored data
             // Then it will listen to new coming events and update its data
-            self.mxSession.start(withSyncFilter: MXFilterJSONModel.init(fromJSON: filterLeftRooms), completion: { (response) in
+            let filter: MXFilterJSONModel = MXFilterJSONModel.init(fromJSON: filterLeftRooms)
+            self.mxSession.start(withSyncFilter: filter, completion: { (response) in
                 guard response.isSuccess else {
                     reject(self.E_MATRIX_ERROR, nil, response.error)
                     return
@@ -157,7 +158,16 @@ class RNMatrixSDK: RCTEventEmitter {
 
         mxSession.createRoom(parameters: params) { response in
             if response.isSuccess {
-                resolve(convertMXRoomTodictionary(room: response.value))
+                var roomDict = convertMXRoomToDictionary(room: response.value, members: nil)
+                roomDict["members"] = arrayUserIds.map({ (userId) -> [String: String?] in
+                    return [
+                        "userId": userId,
+                        "avatarUrl": nil,
+                        "name": nil,
+                        "membership": "join"
+                    ];
+                })
+                resolve(roomDict)
             } else {
                 reject(nil, nil, response.error)
             }
@@ -173,7 +183,14 @@ class RNMatrixSDK: RCTEventEmitter {
 
         mxSession.joinRoom(roomId) { response in
             if response.isSuccess {
-                resolve(convertMXRoomTodictionary(room: response.value))
+                let room = response.value
+                room?.members(completion: { (members) in
+                    guard members.isSuccess else {
+                        reject(self.E_MATRIX_ERROR, "Couldn't retrieve room member list after joining. The join itself was successful!", members.error);
+                        return
+                    }
+                    resolve(convertMXRoomToDictionary(room: response.value, members: members.value ?? nil))
+                })
             } else {
                 reject(nil, nil, response.error)
             }
@@ -285,7 +302,7 @@ class RNMatrixSDK: RCTEventEmitter {
             (r: MXRoom) -> [String: Any?] in
             let room = mxSession.room(withRoomId: r.roomId)
 
-            return convertMXRoomTodictionary(room: room)
+            return convertMXRoomToDictionary(room: room, members: nil)
         })
 
         resolve(rooms)
@@ -352,13 +369,30 @@ class RNMatrixSDK: RCTEventEmitter {
             return
         }
 
-        let rooms = mxSession.rooms.map({
-            (r: MXRoom) -> [String: Any?] in
-            let room = mxSession.room(withRoomId: r.roomId)
-            return convertMXRoomTodictionary(room: room)
-        })
+        let rooms = mxSession.rooms
 
-        resolve(rooms)
+        if (rooms.count <= 0) {
+            resolve([])
+            return;
+        }
+
+        var roomsAsDict: [[String: Any?]] = [[String: Any?]]()
+
+        for index in 0...rooms.count - 1 {
+            let room = rooms[index]
+            room.members { (membersRes) in
+                if membersRes.isSuccess {
+                    roomsAsDict.append(convertMXRoomToDictionary(room: room, members: membersRes.value ?? nil))
+                } else {
+                    print("Cant retrieve member list for room " + room.roomId + ". Won't add to list of lest rooms!")
+                }
+
+                // check if end of list and return if so
+                if index == rooms.count-1 {
+                    resolve(roomsAsDict)
+                }
+            }
+        }
     }
 
     @objc(getLeftRooms:rejecter:)
@@ -379,8 +413,6 @@ class RNMatrixSDK: RCTEventEmitter {
                     }
                     var rooms: [MXRoom] = [MXRoom]()
                     roomFilterRes.value?.rooms.leave.keys.forEach({ (roomId) in
-                        print("Found left room with ID " + roomId);
-
                         var room = self.mxSession.room(withRoomId: roomId)
 
                         if room == nil {
@@ -397,12 +429,22 @@ class RNMatrixSDK: RCTEventEmitter {
                     })
 
                     var roomsAsDict: [[String: Any?]] = [[String: Any?]]()
-                    if rooms.count > 0 {
-                        roomsAsDict = rooms.map({ (room) -> [String: Any?] in
-                            return convertMXRoomTodictionary(room: room)
-                        })
+
+                    for index in 0...rooms.count - 1 {
+                        let room = rooms[index]
+                        room.members { (membersRes) in
+                            if membersRes.isSuccess {
+                                roomsAsDict.append(convertMXRoomToDictionary(room: room, members: membersRes.value ?? nil))
+                            } else {
+                                print("Cant retrieve member list for room " + room.roomId + ". Won't add to list of lest rooms!")
+                            }
+
+                            // check if end of list and return if so
+                            if index == rooms.count-1 {
+                                resolve(roomsAsDict)
+                            }
+                        }
                     }
-                    resolve(roomsAsDict)
                 } else {
                     reject(self.E_MATRIX_ERROR, "Can't get left rooms", roomFilterRes.error);
                 }
@@ -787,19 +829,26 @@ internal func unNil(value: Any?) -> Any? {
     return value
 }
 
-internal func convertMXRoomTodictionary(room: MXRoom?) -> [String: Any?] {
-     let lastMessage = room?.summary?.lastMessageEvent ?? nil
-     let isLeft = room?.summary.membership == MXMembership.leave
+internal func convertMXRoomToDictionary(room: MXRoom?, members: MXRoomMembers?) -> [String: Any?] {
+    let lastMessage = room?.summary?.lastMessageEvent ?? nil
+    let isLeft = room?.summary.membership == MXMembership.leave
+    var membersDict: [[String: String?]]? = [[String: String?]]()
+    if members !== nil {
+        membersDict = members?.members.map({ (roomMember) -> [String: String?] in
+            return convertMXRoomMemberToDictionary(member: roomMember)
+        })
+    }
 
-     return [
-         "room_id": unNil(value: room?.roomId),
-         "name": unNil(value: room?.summary.displayname),
-         "notification_count": unNil(value: room?.summary.notificationCount),
-         "highlight_count": unNil(value: room?.summary.highlightCount),
-         "is_direct": unNil(value: room?.summary.isDirect),
-         "last_message": convertMXEventToDictionary(event: lastMessage),
-         "isLeft": isLeft,
-     ]
+    return [
+        "room_id": unNil(value: room?.roomId),
+        "name": unNil(value: room?.summary.displayname),
+        "notification_count": unNil(value: room?.summary.notificationCount),
+        "highlight_count": unNil(value: room?.summary.highlightCount),
+        "is_direct": unNil(value: room?.summary.isDirect),
+        "last_message": convertMXEventToDictionary(event: lastMessage),
+        "isLeft": isLeft,
+        "members": membersDict,
+    ]
 }
 
 internal func convertMXEventToDictionary(event: MXEvent?) -> [String: Any] {
@@ -812,6 +861,28 @@ internal func convertMXEventToDictionary(event: MXEvent?) -> [String: Any] {
         "content": unNil(value: event?.content) as Any,
         "ts": unNil(value: event?.originServerTs) as Any,
     ]
+}
+
+internal func convertMXRoomMemberToDictionary(member: MXRoomMember) -> [String: String?] {
+    return [
+        "userId": member.userId,
+        "avatarUrl": member.avatarUrl,
+        "name": member.displayname,
+        "membership": membershipToString(membership: member.membership)
+    ]
+}
+
+internal func membershipToString(membership: MXMembership) -> String {
+    switch membership {
+    case .leave:
+        return "leave"
+    case .ban:
+        return "ban"
+    case .invite:
+        return "invite"
+    default:
+        return "join"
+    }
 }
 
 internal func convertStringToMXMessageType(type: String) -> MXMessageType {
@@ -844,3 +915,4 @@ let filterLeftRooms: [String: Any] = [
         ]
     ]
 ];
+

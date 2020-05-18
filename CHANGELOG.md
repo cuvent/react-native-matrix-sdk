@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha48
+
+* Added `members` attribute to room
+
 ## 1.0.0-alpha47
 
 * Fixed android left rooms having no room summary

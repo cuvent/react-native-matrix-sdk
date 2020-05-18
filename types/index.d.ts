@@ -14,6 +14,13 @@ declare interface MXSessionAttributes {
   status: string;
 }
 
+declare interface MXRoomMember {
+  membership: 'join' | 'invite' | 'leave' | 'ban' | 'kick';
+  userId: string;
+  name: string;
+  avatarUrl: string;
+}
+
 declare interface MXMessageEvent {
   event_type: string;
   event_id: string;
@@ -42,6 +49,7 @@ declare interface MXRoomAttributes {
   is_direct: boolean;
   last_message: MXMessageEvent;
   isLeft: boolean;
+  members: MXRoomMember[];
 }
 
 declare interface PublicRoom {
