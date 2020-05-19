@@ -844,7 +844,7 @@ internal func convertMXRoomToDictionary(room: MXRoom?, members: MXRoomMembers?) 
         "name": unNil(value: room?.summary.displayname),
         "notification_count": unNil(value: room?.summary.notificationCount),
         "highlight_count": unNil(value: room?.summary.highlightCount),
-        "is_direct": unNil(value: room?.summary.isDirect),
+        "is_direct": room?.isDirect, //unNil(value: room?.summary.isDirect),
         "last_message": convertMXEventToDictionary(event: lastMessage),
         "isLeft": isLeft,
         "members": membersDict,

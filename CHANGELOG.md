@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha50
+
+* Fixed issue in iOS where `isDirect` field could be wrong
+
 ## 1.0.0-alpha49
 
 * Fixed typescript array usage
