@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha49
+
+* Fixed typescript array usage
+
 ## 1.0.0-alpha48
 
 * Added `members` attribute to room

@@ -123,11 +123,11 @@ declare module 'react-native-matrix-sdk' {
      */
     inviteUserToRoom(roomId: string, userId: string): Promise<void>;
 
-    getInvitedRooms(): Promise<[MXRoomAttributes]>;
-    getPublicRooms(url: string): Promise<[PublicRoom]>;
-    getUnreadEventTypes(): Promise<[string]>;
-    getLastEventsForAllRooms(): Promise<[MXMessageEvent]>;
-    getJoinedRooms(): Promise<[MXRoomAttributes]>;
+    getInvitedRooms(): Promise<MXRoomAttributes[]>;
+    getPublicRooms(url: string): Promise<PublicRoom[]>;
+    getUnreadEventTypes(): Promise<string[]>;
+    getLastEventsForAllRooms(): Promise<MXMessageEvent[]>;
+    getJoinedRooms(): Promise<MXRoomAttributes[]>;
     getLeftRooms(): Promise<MXRoomAttributes[]>;
     listenToRoom(roomId: string): Promise<void>;
     unlistenToRoom(roomId: string): Promise<void>;
@@ -142,7 +142,7 @@ declare module 'react-native-matrix-sdk' {
      * @param perPage number of entries to return max
      * @param initialLoad when you are first requesting past messages, this needs to be true as it is your initial load request
      */
-    loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<[MXMessageEvent]>;
+    loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<MXMessageEvent[]>;
     searchMessagesInRoom(roomId: string, searchTerm: string, nextBatch: string, beforeLimit: string, afterLimit: string);
     getMessages(roomId: string, from: string, direction: string, limit: number): Promise<MessagesFromRoom>;
 
