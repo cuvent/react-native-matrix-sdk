@@ -182,18 +182,30 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             mxSession.getRoomsApiClient().createRoom(params, new RejectingOnErrorApiCallback<CreateRoomResponse>(promise) {
                 @Override
                 public void onSuccess(CreateRoomResponse info) {
-                    promise.resolve(
-                            convertRoomToMap(mxSession.getDataHandler().getRoom(info.roomId))
-                    );
+                    Room room = mxSession.getDataHandler().getRoom(info.roomId);
+                    room.updateJoinRules(RoomState.JOIN_RULE_PUBLIC, new RejectingOnErrorApiCallback<Void>(promise) {
+                        @Override
+                        public void onSuccess(Void info) {
+                            promise.resolve(
+                                    convertRoomToMap(room)
+                            );
+                        }
+                    });
                 }
             });
         } else {
             mxSession.createDirectMessageRoom(userIdsList.get(0), new RejectingOnErrorApiCallback<String>(promise) {
                 @Override
                 public void onSuccess(String info) {
-                    promise.resolve(
-                            convertRoomToMap(mxSession.getDataHandler().getRoom(info))
-                    );
+                    Room room = mxSession.getDataHandler().getRoom(info);
+                    room.updateJoinRules(RoomState.JOIN_RULE_PUBLIC, new RejectingOnErrorApiCallback<Void>(promise) {
+                        @Override
+                        public void onSuccess(Void info) {
+                            promise.resolve(
+                                    convertRoomToMap(room)
+                            );
+                        }
+                    });
                 }
             });
         }
