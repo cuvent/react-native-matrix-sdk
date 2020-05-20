@@ -158,16 +158,20 @@ class RNMatrixSDK: RCTEventEmitter {
 
         mxSession.createRoom(parameters: params) { response in
             if response.isSuccess {
-                var roomDict = convertMXRoomToDictionary(room: response.value, members: nil)
-                roomDict["members"] = arrayUserIds.map({ (userId) -> [String: String?] in
-                    return [
-                        "userId": userId,
-                        "avatarUrl": nil,
-                        "name": nil,
-                        "membership": "join"
-                    ];
+                response.value?.setJoinRule(MXRoomJoinRule.public, completion: { (responseRoomJoinRule) in
+                    response.value?.setHistoryVisibility(MXRoomHistoryVisibility.shared, completion: { (responsePreview) in
+                        var roomDict = convertMXRoomToDictionary(room: response.value, members: nil)
+                        roomDict["members"] = arrayUserIds.map({ (userId) -> [String: String?] in
+                            return [
+                                "userId": userId,
+                                "avatarUrl": nil,
+                                "name": nil,
+                                "membership": "join"
+                            ];
+                        })
+                        resolve(roomDict)
+                    })
                 })
-                resolve(roomDict)
             } else {
                 reject(nil, nil, response.error)
             }
@@ -181,7 +185,7 @@ class RNMatrixSDK: RCTEventEmitter {
             return
         }
 
-        mxSession.joinRoom(roomId) { response in
+        mxSession.joinRoom(roomId) { (response) in
             if response.isSuccess {
                 let room = response.value
                 room?.members(completion: { (members) in
@@ -190,11 +194,14 @@ class RNMatrixSDK: RCTEventEmitter {
                         return
                     }
                     resolve(convertMXRoomToDictionary(room: response.value, members: members.value ?? nil))
+                    return
                 })
             } else {
-                reject(nil, nil, response.error)
+                reject(self.E_MATRIX_ERROR, nil, response.error)
+                return
             }
         }
+        return
     }
 
     @objc(leaveRoom:resolver:rejecter:)
@@ -412,6 +419,7 @@ class RNMatrixSDK: RCTEventEmitter {
                         return
                     }
                     var rooms: [MXRoom] = [MXRoom]()
+
                     roomFilterRes.value?.rooms.leave.keys.forEach({ (roomId) in
                         var room = self.mxSession.room(withRoomId: roomId)
 
@@ -429,6 +437,10 @@ class RNMatrixSDK: RCTEventEmitter {
                     })
 
                     var roomsAsDict: [[String: Any?]] = [[String: Any?]]()
+                    var pendingRequests = [String]()
+                    rooms.forEach { (room) in
+                        pendingRequests.append(room.roomId)
+                    }
 
                     for index in 0...rooms.count - 1 {
                         let room = rooms[index]
@@ -439,8 +451,11 @@ class RNMatrixSDK: RCTEventEmitter {
                                 print("Cant retrieve member list for room " + room.roomId + ". Won't add to list of lest rooms!")
                             }
 
+                            // remove the room id from the pending requests
+                            pendingRequests = pendingRequests.filter { $0 != room.roomId }
+
                             // check if end of list and return if so
-                            if index == rooms.count-1 {
+                            if pendingRequests.count == 0 {
                                 resolve(roomsAsDict)
                             }
                         }
