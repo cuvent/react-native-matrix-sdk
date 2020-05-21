@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha53
+
+* Fixed issue on iOS where `markRoomAsRead` promise would not resolve
+
 ## 1.0.0-alpha50
 
 * Fixed issue in iOS where `isDirect` field could be wrong

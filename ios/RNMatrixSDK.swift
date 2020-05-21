@@ -739,6 +739,7 @@ class RNMatrixSDK: RCTEventEmitter {
         }
 
         room?.markAllAsRead()
+        resolve(nil)
     }
 
     @objc(sendReadReceipt:eventId:resolver:rejecter:)
