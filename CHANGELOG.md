@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha54
+
+* Fixed crash on iOS when requesting left rooms and user have none
+
 ## 1.0.0-alpha53
 
 * Fixed issue on iOS where `markRoomAsRead` promise would not resolve

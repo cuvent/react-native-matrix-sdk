@@ -418,6 +418,11 @@ class RNMatrixSDK: RCTEventEmitter {
                         resolve([])
                         return
                     }
+                    if roomFilterRes.value?.rooms.leave.count ?? 0 <= 0 {
+                        resolve([])
+                        return
+                    }
+
                     var rooms: [MXRoom] = [MXRoom]()
 
                     roomFilterRes.value?.rooms.leave.keys.forEach({ (roomId) in
@@ -440,6 +445,11 @@ class RNMatrixSDK: RCTEventEmitter {
                     var pendingRequests = [String]()
                     rooms.forEach { (room) in
                         pendingRequests.append(room.roomId)
+                    }
+
+                    if rooms.count <= 0 {
+                        resolve([])
+                        return
                     }
 
                     for index in 0...rooms.count - 1 {
