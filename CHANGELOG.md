@@ -2,6 +2,10 @@
 
 ## 1.0.0-alpha55
 
+* Added `updateRoomName`
+
+## 1.0.0-alpha55
+
 * Added name parameter to `createRoom` method
 
 ## 1.0.0-alpha54

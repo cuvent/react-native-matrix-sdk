@@ -179,6 +179,28 @@ class RNMatrixSDK: RCTEventEmitter {
         }
     }
 
+    @objc(updateRoomName:newName:resolver:rejecter:)
+    func updateRoomName(roomId: String, newName: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(nil, "client is not connected yet", nil)
+            return
+        }
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(E_MATRIX_ERROR, "Room not found", nil)
+            return
+        }
+
+        room?.setName(newName, completion: { (response) in
+            if response.isSuccess {
+                resolve(nil)
+            } else {
+                reject(self.E_MATRIX_ERROR, "There was an issue while performing updateRoomName request", response.error)
+            }
+        })
+    }
+
     @objc(joinRoom:resolver:rejecter:)
     func joinRoom(roomId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {

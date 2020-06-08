@@ -213,6 +213,27 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
+    public void updateRoomName(String roomId, String newName, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId, false);
+        if (room == null) {
+            promise.reject(E_MATRIX_ERROR, "RoomID " + roomId + " not found. Can't remove user");
+            return;
+        }
+
+        room.updateName(newName, new RejectingOnErrorApiCallback<Void>(promise) {
+            @Override
+            public void onSuccess(Void info) {
+                promise.resolve(null);
+            }
+        });
+    }
+
+    @ReactMethod
     public void joinRoom(String roomId, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
@@ -259,7 +280,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
         Room room = mxSession.getDataHandler().getRoom(roomId, false);
         if (room == null) {
-            promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
+            promise.reject(E_MATRIX_ERROR, "RoomID " + roomId + " not found. Can't remove user");
             return;
         }
         room.kick(userId, null, new RejectingOnErrorApiCallback<Void>(promise) {
@@ -279,7 +300,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
         Room room = mxSession.getDataHandler().getRoom(roomId, false);
         if (room == null) {
-            promise.reject(E_MATRIX_ERROR, "RoomID ' + roomId + ' not found. Can't remove user");
+            promise.reject(E_MATRIX_ERROR, "RoomID " + roomId + " not found. Can't remove user");
             return;
         }
         int power = setAdmin ? 100 : 0;

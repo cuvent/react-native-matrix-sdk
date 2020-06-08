@@ -94,6 +94,14 @@ declare module 'react-native-matrix-sdk' {
      * @param name an optional name for the room
      */
     createRoom(userIds: Array<string>, isDirect: boolean, isTrustedPrivateChat: boolean, name: string): Promise<MXRoomAttributes>;
+
+    /**
+     * Updates the name of a room
+     * @param roomId
+     * @param newName
+     */
+    updateRoomName(roomId: string, newName: string);
+
     joinRoom(roomId: string): Promise<MXRoomAttributes>;
 
     /**
