@@ -137,8 +137,8 @@ class RNMatrixSDK: RCTEventEmitter {
     }
 
 
-    @objc(createRoom:isDirect:isTrustedPrivateChat:resolver:rejecter:)
-    func createRoom(userIds: NSArray, isDirect: Bool, isTrustedPrivateChat: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc(createRoom:isDirect:isTrustedPrivateChat:name:resolver:rejecter:)
+    func createRoom(userIds: NSArray, isDirect: Bool, isTrustedPrivateChat: Bool, name: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(nil, "client is not connected yet", nil)
             return
@@ -155,6 +155,7 @@ class RNMatrixSDK: RCTEventEmitter {
         params.visibility = MXRoomDirectoryVisibility.private.identifier
         params.inviteArray = arrayUserIds
         params.preset = preset?.identifier
+        params.name = name
 
         mxSession.createRoom(parameters: params) { response in
             if response.isSuccess {

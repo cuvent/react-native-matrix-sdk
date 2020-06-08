@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha55
+
+* Added name parameter to `createRoom` method
+
 ## 1.0.0-alpha54
 
 * Fixed crash on iOS when requesting left rooms and user have none
