@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha57
+
+* Changed `loadMessagesInRoom` to `backPaginate` to be in accordance with how the native SDKs work, thus supportign offline fetching of messages
+* Added `canBackPaginate`
+
 ## 1.0.0-alpha55
 
 * Added `updateRoomName`

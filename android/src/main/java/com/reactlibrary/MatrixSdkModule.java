@@ -29,6 +29,7 @@ import org.matrix.androidsdk.data.Pusher;
 import org.matrix.androidsdk.data.Room;
 import org.matrix.androidsdk.data.RoomState;
 import org.matrix.androidsdk.data.store.MXFileStore;
+import org.matrix.androidsdk.data.timeline.EventTimeline;
 import org.matrix.androidsdk.listeners.MXEventListener;
 import org.matrix.androidsdk.rest.client.LoginRestClient;
 import org.matrix.androidsdk.rest.model.CreateRoomParams;
@@ -36,7 +37,6 @@ import org.matrix.androidsdk.rest.model.CreateRoomResponse;
 import org.matrix.androidsdk.rest.model.CreatedEvent;
 import org.matrix.androidsdk.rest.model.Event;
 import org.matrix.androidsdk.rest.model.PushersResponse;
-import org.matrix.androidsdk.rest.model.TokensChunkEvents;
 import org.matrix.androidsdk.rest.model.User;
 import org.matrix.androidsdk.rest.model.login.Credentials;
 
@@ -449,6 +449,16 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         });
     }
 
+
+    EventTimeline.Listener backwardsListener = (event, direction, roomState) -> {
+        if (direction == EventTimeline.Direction.BACKWARDS) {
+            sendEvent(
+                    "matrix.room.backwards",
+                    convertEventToMap(event)
+            );
+            Log.d(TAG, event.toString());
+        }
+    };
     @ReactMethod
     public void listenToRoom(String roomId, Promise promise) {
         if (mxSession == null) {
@@ -472,6 +482,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                 Log.d(TAG, event.toString());
             }
         };
+        room.getTimeline().addEventTimelineListener(backwardsListener);
 
         roomEventListener.put(roomId, eventListener);
         room.addEventListener(eventListener);
@@ -493,6 +504,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
         room.removeEventListener(roomEventListener.get(roomId));
+        room.getTimeline().removeEventTimelineListener(backwardsListener);
         promise.resolve(null);
     }
 
@@ -546,7 +558,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
-    public void loadMessagesInRoom(String roomId, int perPage, boolean initialLoad, Promise promise) {
+    public void backPaginate(String roomId, int perPage, boolean initHistory, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
             return;
@@ -558,22 +570,32 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             return;
         }
 
-        String fromToken = null;
-        if (!initialLoad && roomPaginationTokens.get(roomId) != null) {
-            fromToken = roomPaginationTokens.get(roomId);
+        if (initHistory) {
+            room.getTimeline().initHistory();
         }
 
-        room.requestServerRoomHistory(fromToken, perPage, new RejectingOnErrorApiCallback<TokensChunkEvents>(promise) {
+        room.getTimeline().backPaginate(perPage, new RejectingOnErrorApiCallback<Integer>(promise) {
             @Override
-            public void onSuccess(TokensChunkEvents info) {
-                roomPaginationTokens.put(roomId, info.end);
-                WritableArray msgs = Arguments.createArray();
-                for (Event event : info.chunk) {
-                    msgs.pushMap(convertEventToMap(event));
-                }
-                promise.resolve(msgs);
+            public void onSuccess(Integer info) {
+                promise.resolve(info);
             }
         });
+    }
+
+    @ReactMethod
+    private void canBackPaginate(String roomId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId);
+        if (room == null) {
+            promise.reject(E_MATRIX_ERROR, "Room not found");
+            return;
+        }
+
+        promise.resolve(room.getTimeline().canBackPaginate());
     }
 
     @ReactMethod

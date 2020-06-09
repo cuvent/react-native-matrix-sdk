@@ -497,7 +497,6 @@ class RNMatrixSDK: RCTEventEmitter {
                     reject(self.E_MATRIX_ERROR, "Can't get left rooms", roomFilterRes.error);
                 }
             }
-            //print("Created filter with id " + (response ?? "failed to get ID :thinking_face:"));
         }) { (error) in
             reject(self.E_MATRIX_ERROR, "Can't set filter to get left rooms", error);
         }
@@ -549,9 +548,6 @@ class RNMatrixSDK: RCTEventEmitter {
 
             resolve(nil)
         })
-
-
-
     }
 
     @objc(unlistenToRoom:resolver:rejecter:)
@@ -616,17 +612,47 @@ class RNMatrixSDK: RCTEventEmitter {
         }
     }
 
-    @objc(loadMessagesInRoom:perPage:initialLoad:resolver:rejecter:)
-    func loadMessagesInRoom(roomId: String, perPage: NSNumber, initialLoad: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        var fromToken = ""
-        if(!initialLoad) {
-            fromToken = roomPaginationTokens[roomId] ?? ""
-            if(fromToken.isEmpty) {
-                print("Warning: trying to load not initial messages, but the SDK has no token set for this room currently. You need to run with initialLoad: true first!")
-            }
+    @objc(backPaginate:perPage:initHistory:resolver:rejecter:)
+    func backPaginate(roomId: String, perPage: NSNumber, initHistory: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(nil, "client is not connected yet", nil)
+            return
         }
 
-        getMessages(roomId: roomId, from: fromToken, direction: "backwards", limit: perPage, resolve: resolve, reject: reject)
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(nil, "Room not found", nil)
+            return
+        }
+
+        room?.liveTimeline({ (timeline) in
+            if initHistory {
+                timeline?.resetPagination();
+            }
+            timeline?.paginate(UInt(truncating: perPage), direction: MXTimelineDirection.backwards, onlyFromStore: false, completion: { (response) in
+                resolve(nil)
+            })
+        })
+    }
+
+    @objc(canBackPaginate:resolver:rejecter:)
+    func canBackPaginate(roomId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(nil, "client is not connected yet", nil)
+            return
+        }
+
+        let room = mxSession.room(withRoomId: roomId)
+
+        if room == nil {
+            reject(nil, "Room not found", nil)
+            return
+        }
+
+        room?.liveTimeline({ (timeline) in
+            resolve(timeline?.canPaginate(MXTimelineDirection.backwards))
+        })
     }
 
     @objc(getMessages:from:direction:limit:resolver:rejecter:)
@@ -964,4 +990,3 @@ let filterLeftRooms: [String: Any] = [
         ]
     ]
 ];
-
