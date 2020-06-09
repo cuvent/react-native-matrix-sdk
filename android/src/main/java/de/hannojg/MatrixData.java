@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package de.hannojg;
 
 import android.util.Log;
 
@@ -14,7 +14,7 @@ import org.matrix.androidsdk.rest.model.RoomMember;
 import java.util.Collection;
 import java.util.List;
 
-import static com.reactlibrary.MatrixSdkModule.TAG;
+import static de.hannojg.MatrixSdkModule.TAG;
 
 public class MatrixData {
     public static WritableMap convertEventToMap(Event matrixEvent) {

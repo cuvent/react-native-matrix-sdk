@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package de.hannojg;
 
 import android.content.Context;
 import android.net.Uri;
@@ -45,9 +45,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-
-import static com.reactlibrary.MatrixData.convertEventToMap;
-import static com.reactlibrary.MatrixData.convertRoomToMap;
 
 public class MatrixSdkModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
     public static final String TAG = MatrixSdkModule.class.getSimpleName();
@@ -188,7 +185,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                         @Override
                         public void onSuccess(Void info) {
                             promise.resolve(
-                                    convertRoomToMap(room)
+                                    MatrixData.convertRoomToMap(room)
                             );
                         }
                     });
@@ -203,7 +200,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                         @Override
                         public void onSuccess(Void info) {
                             promise.resolve(
-                                    convertRoomToMap(room)
+                                    MatrixData.convertRoomToMap(room)
                             );
                         }
                     });
@@ -244,7 +241,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             @Override
             public void onSuccess(String info) {
                 promise.resolve(
-                        convertRoomToMap(mxSession.getDataHandler().getRoom(roomId))
+                        MatrixData.convertRoomToMap(mxSession.getDataHandler().getRoom(roomId))
                 );
             }
         });
@@ -343,7 +340,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         for (Room room : mxSession.getDataHandler().getStore().getRooms()) {
             if (room.isInvited()) {
                 rooms.pushMap(
-                        convertRoomToMap(room)
+                        MatrixData.convertRoomToMap(room)
                 );
             }
         }
@@ -370,7 +367,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         WritableArray roomSummaries = Arguments.createArray();
         for (Room room : rooms) {
             roomSummaries.pushMap(
-                    convertRoomToMap(
+                    MatrixData.convertRoomToMap(
                             room
                     )
             );
@@ -390,7 +387,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             WritableArray rooms = Arguments.createArray();
             for (Room room : mxSession.getDataHandler().getStore().getRooms()) {
                 rooms.pushMap(
-                        convertRoomToMap(room)
+                        MatrixData.convertRoomToMap(room)
                 );
             }
 
@@ -424,7 +421,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
             for (Room room : mxSession.getDataHandler().getLeftRooms()) {
                 rooms.pushMap(
-                        convertRoomToMap(room)
+                        MatrixData.convertRoomToMap(room)
                 );
             }
 
@@ -454,7 +451,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         if (direction == EventTimeline.Direction.BACKWARDS) {
             sendEvent(
                     "matrix.room.backwards",
-                    convertEventToMap(event)
+                    MatrixData.convertEventToMap(event)
             );
             Log.d(TAG, event.toString());
         }
@@ -477,7 +474,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             public void onLiveEvent(Event event, RoomState roomState) {
                 sendEvent(
                         "matrix.room.forwards",
-                        convertEventToMap(event)
+                        MatrixData.convertEventToMap(event)
                 );
                 Log.d(TAG, event.toString());
             }
@@ -524,17 +521,17 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             globalListener = new MXEventListener() {
                 @Override
                 public void onLiveEvent(Event event, RoomState roomState) {
-                    sendEvent(event.getType(), convertEventToMap(event));
+                    sendEvent(event.getType(), MatrixData.convertEventToMap(event));
                 }
 
                 @Override
                 public void onPresenceUpdate(Event event, User user) {
-                    sendEvent(event.getType(), convertEventToMap(event));
+                    sendEvent(event.getType(), MatrixData.convertEventToMap(event));
                 }
 
                 @Override
                 public void onEventSent(Event event, String prevEventId) {
-                    sendEvent(event.getType(), convertEventToMap(event));
+                    sendEvent(event.getType(), MatrixData.convertEventToMap(event));
                 }
             };
 

@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package de.hannojg;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;

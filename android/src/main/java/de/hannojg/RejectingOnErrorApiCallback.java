@@ -1,13 +1,13 @@
-package com.reactlibrary;
+package de.hannojg;
 
 import com.facebook.react.bridge.Promise;
 
 import org.matrix.androidsdk.core.callback.ApiCallback;
 import org.matrix.androidsdk.core.model.MatrixError;
 
-import static com.reactlibrary.MatrixSdkModule.E_MATRIX_ERROR;
-import static com.reactlibrary.MatrixSdkModule.E_NETWORK_ERROR;
-import static com.reactlibrary.MatrixSdkModule.E_UNEXCPECTED_ERROR;
+import static de.hannojg.MatrixSdkModule.E_MATRIX_ERROR;
+import static de.hannojg.MatrixSdkModule.E_NETWORK_ERROR;
+import static de.hannojg.MatrixSdkModule.E_UNEXCPECTED_ERROR;
 
 public abstract class RejectingOnErrorApiCallback<T> implements ApiCallback<T> {
     private final Promise promise;
