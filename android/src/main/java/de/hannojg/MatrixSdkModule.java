@@ -86,6 +86,19 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
     @ReactMethod
     public void login(String username, String password, Promise promise) {
+        if (hsConfig != null) {
+            if (hsConfig.getCredentials() != null) {
+                try {
+                    JsonElement json = JsonParser.parseString(hsConfig.getCredentials().toJson().toString());
+                    WritableMap map = RNJson.convertJsonToMap(json.getAsJsonObject());
+                    promise.resolve(map);
+                    return;
+                } catch (JSONException ignore) {
+                    // swallow
+                }
+            }
+        }
+
         new LoginRestClient(hsConfig).loginWithUser(username, password, new RejectingOnErrorApiCallback<Credentials>(promise) {
             @Override
             public void onSuccess(Credentials info) {
@@ -103,6 +116,20 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
 
     @ReactMethod
     public void startSession(Promise promise) {
+        if (mxSession != null && mxSession.getDataHandler().isInitialSyncComplete()) {
+            // TODO: refactor, duplicated code
+            WritableMap map = Arguments.createMap();
+
+            map.putString("user_id", mxSession.getMyUser().user_id);
+            map.putString("display_name", mxSession.getMyUser().displayname);
+            map.putString("avatar", mxSession.getMyUser().avatar_url);
+            Long lastActive = mxSession.getMyUser().lastActiveAgo != null ? mxSession.getMyUser().lastActiveAgo : 0L;
+            map.putDouble("last_active", lastActive);
+            map.putString("last_active", mxSession.getMyUser().statusMsg);
+            promise.resolve(map);
+            return;
+        }
+
         mxSession = new MXSession.Builder(
                 hsConfig,
                 new MXDataHandler(

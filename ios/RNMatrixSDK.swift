@@ -75,6 +75,17 @@ class RNMatrixSDK: RCTEventEmitter {
 
     @objc(login:password:resolver:rejecter:)
     func login(username: String, password: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        // don't relogin if user is already login
+        if self.mxCredentials != nil {
+            resolve([
+                "home_server": unNil(value: self.mxCredentials?.homeServer),
+                "user_id": unNil(value: self.mxCredentials?.userId),
+                "access_token": unNil(value: self.mxCredentials?.accessToken),
+                "device_id": unNil(value: self.mxCredentials?.deviceId),
+            ])
+            return
+        }
+
         // New user login
         let dummyCredentials = MXCredentials(homeServer: self.mxHomeServer.absoluteString, userId: nil, accessToken: nil)
 
@@ -98,6 +109,21 @@ class RNMatrixSDK: RCTEventEmitter {
 
     @objc(startSession:rejecter:)
     func startSession(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        // when session is set and connected return the connected session
+        if mxSession != nil && (mxSession.state == MXSessionStateInitialised || mxSession.state == MXSessionStateRunning) {
+            // TODO: refactor to getMyUser and reuse
+            let user = self.mxSession.myUser
+            resolve([
+                "user_id": unNil(value: user?.userId),
+                "display_name": unNil(value: user?.displayname),
+                "avatar": unNil(value: user?.avatarUrl),
+                "last_active": unNil(value: user?.lastActiveAgo),
+                "status": unNil(value: user?.statusMsg),
+            ])
+            return
+        }
+
+
         // Create a matrix client
         let mxRestClient = MXRestClient(credentials: self.mxCredentials, unrecognizedCertificateHandler: nil)
 
@@ -123,6 +149,7 @@ class RNMatrixSDK: RCTEventEmitter {
                     return
                 }
 
+                // TODO: refactor to getMyUser and reuse
                 let user = self.mxSession.myUser
 
                 resolve([
@@ -328,14 +355,14 @@ class RNMatrixSDK: RCTEventEmitter {
             return
         }
 
-        let rooms = mxSession.invitedRooms().map({
+        let rooms = mxSession.invitedRooms()?.map({
             (r: MXRoom) -> [String: Any?] in
             let room = mxSession.room(withRoomId: r.roomId)
 
             return convertMXRoomToDictionary(room: room, members: nil)
         })
 
-        resolve(rooms)
+        resolve(rooms ?? [])
     }
 
     @objc(getPublicRooms:resolver:rejecter:)
@@ -820,12 +847,12 @@ class RNMatrixSDK: RCTEventEmitter {
 
     @objc(registerPushNotifications:appId:pushServiceUrl:token:resolver:rejecter:)
     func registerPushNotifications(displayName: String, appId: String, pushServiceUrl: String, token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        if mxSession == nil {
+        if mxSession == nil && mxSession.myUser != nil {
             reject(E_MATRIX_ERROR, "client is not connected yet", nil)
             return
         }
 
-        let tag = calculateTag(session: mxSession)
+        let tag = calculateTag(session: self.mxSession)
         let skr: Data = Utilities.data(fromHexString: token)
         let b64Token = (skr.base64EncodedString())
 
@@ -888,7 +915,7 @@ class RNMatrixSDK: RCTEventEmitter {
 }
 
 internal func calculateTag(session: MXSession) -> String {
-    var tag = "mobile_" + String(abs(session.myUser.userId.hashValue))
+    var tag = "mobile_" + String(abs(session.myUserId.hashValue))
 
     if(tag.count > 32) {
         tag = String(abs(tag.hashValue))

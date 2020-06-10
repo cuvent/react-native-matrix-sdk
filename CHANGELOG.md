@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha59
+
+* Fixed that login / startSession won't be called when already init
+* Fixed some crash causes on iOS
+
 ## 1.0.0-alpha58
 
 * Changed android package name to a unique one
