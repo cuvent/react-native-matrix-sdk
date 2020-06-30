@@ -85,11 +85,11 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'  // From node_modules
 
     // Matrix android SDK https://github.com/matrix-org/matrix-android-sdk
-    implementation('com.github.matrix-org:matrix-android-sdk:v0.9.33') {
+    implementation('com.github.matrix-org:matrix-android-sdk:v0.9.35') {
         exclude group: 'org.matrix.gitlab.matrix-org', module: 'olm'
     }
     // This one is broken: https://github.com/jitpack/jitpack.io/issues/3908#issuecomment-526767673
-    //implementation 'org.matrix.gitlab.matrix-org:olm:3.1.2'
+    //implementation 'org.matrix.gitlab.matrix-org:olm:3.1.5'
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
 
     // For converting JSON stuff (is done with GSON in matrixSDK)

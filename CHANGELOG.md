@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha60
+
+* Upgraded android matrix SDK to 0.19.35
+* Upgraded iOS matrix SDK 0.16.5
+
 ## 1.0.0-alpha59
 
 * Fixed that login / startSession won't be called when already init
