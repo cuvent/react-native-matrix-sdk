@@ -606,7 +606,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                 roomPaginationTokens.put(roomId, info.end);
                 WritableArray msgs = Arguments.createArray();
                 for (Event event : info.chunk) {
-                    msgs.pushMap(convertEventToMap(event));
+                    msgs.pushMap(MatrixData.convertEventToMap(event));
                 }
                 promise.resolve(msgs);
             }
