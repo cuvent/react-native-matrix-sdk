@@ -155,6 +155,14 @@ declare module 'react-native-matrix-sdk' {
     backPaginate(roomId: string, perPage: number, initHistory: boolean): Promise<MXMessageEvent[]>;
 
     /**
+     * Requests room history from server.
+     * @param roomId
+     * @param perPage
+     * @param initialLoad set to true on first request (initial request, newest messages), any additional calls with false to get further room history
+     */
+    loadMessagesInRoom(roomId: string, perPage: number, initialLoad: boolean): Promise<MXMessageEvent[]>;
+
+    /**
      * Returns true when back pagination is (still) possible.
      * @param roomId
      */

@@ -37,6 +37,7 @@ import org.matrix.androidsdk.rest.model.CreateRoomResponse;
 import org.matrix.androidsdk.rest.model.CreatedEvent;
 import org.matrix.androidsdk.rest.model.Event;
 import org.matrix.androidsdk.rest.model.PushersResponse;
+import org.matrix.androidsdk.rest.model.TokensChunkEvents;
 import org.matrix.androidsdk.rest.model.User;
 import org.matrix.androidsdk.rest.model.login.Credentials;
 
@@ -579,6 +580,37 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             mxSession.getDataHandler().removeListener(globalListener);
             globalListener = null;
         }
+    }
+
+    @ReactMethod
+    public void loadMessagesInRoom(String roomId, int perPage, boolean initialLoad, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        Room room = mxSession.getDataHandler().getRoom(roomId);
+        if (room == null) {
+            promise.reject(E_MATRIX_ERROR, "Room not found");
+            return;
+        }
+
+        String fromToken = null;
+        if (!initialLoad && roomPaginationTokens.get(roomId) != null) {
+            fromToken = roomPaginationTokens.get(roomId);
+        }
+
+        room.requestServerRoomHistory(fromToken, perPage, new RejectingOnErrorApiCallback<TokensChunkEvents>(promise) {
+            @Override
+            public void onSuccess(TokensChunkEvents info) {
+                roomPaginationTokens.put(roomId, info.end);
+                WritableArray msgs = Arguments.createArray();
+                for (Event event : info.chunk) {
+                    msgs.pushMap(convertEventToMap(event));
+                }
+                promise.resolve(msgs);
+            }
+        });
     }
 
     @ReactMethod

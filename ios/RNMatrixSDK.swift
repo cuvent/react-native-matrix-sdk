@@ -682,6 +682,19 @@ class RNMatrixSDK: RCTEventEmitter {
         })
     }
 
+    @objc(loadMessagesInRoom:perPage:initialLoad:resolver:rejecter:)
+    func loadMessagesInRoom(roomId: String, perPage: NSNumber, initialLoad: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        var fromToken = ""
+        if(!initialLoad) {
+            fromToken = roomPaginationTokens[roomId] ?? ""
+            if(fromToken.isEmpty) {
+                print("Warning: trying to load not initial messages, but the SDK has no token set for this room currently. You need to run with initialLoad: true first!")
+            }
+        }
+
+        getMessages(roomId: roomId, from: fromToken, direction: "backwards", limit: perPage, resolve: resolve, reject: reject)
+    }
+
     @objc(getMessages:from:direction:limit:resolver:rejecter:)
     func getMessages(roomId: String, from: String, direction: String, limit: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {

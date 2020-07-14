@@ -58,6 +58,8 @@ RCT_EXTERN_METHOD(listen:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRej
 
 RCT_EXTERN_METHOD(unlisten)
 
+RCT_EXTERN_METHOD(loadMessagesInRoom:(NSString *)roomId perPage:(nonnull NSNumber *)perPage initialLoad:(BOOL *)initialLoad resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(backPaginate:(NSString *)roomId perPage:(nonnull NSNumber *)perPage initHistory:(BOOL *)initHistory resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(canBackPaginate:(NSString *)roomId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
