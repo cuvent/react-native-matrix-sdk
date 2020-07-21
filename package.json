@@ -10,8 +10,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hannojg/react-native-matrix-sdk.git",
-    "baseUrl": "https://github.com/hannojg/react-native-matrix-sdk"
+    "url": "git+https://github.com/cuvent/react-native-matrix-sdk.git",
+    "baseUrl": "https://github.com/cuvent/react-native-matrix-sdk"
   },
   "keywords": [
     "react-native"
