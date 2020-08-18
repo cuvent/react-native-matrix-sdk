@@ -893,6 +893,24 @@ class RNMatrixSDK: RCTEventEmitter {
         }
     }
 
+    @objc(uploadContent:fileName:mimeType:uploadId:resolver:rejecter:)
+    func uploadContent(fileUri: String, fileName: String, mimeType: String, uploadId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        let mediaLoader = MXMediaManager.prepareUploader(withMatrixSession: mxSession, initialRange: 0, andRange: 1.0)
+        let nsdata = NSData(contentsOfFile: fileUri)
+        mediaLoader?.uploadData(Data(referencing: nsdata!), filename: fileName, mimeType: mimeType, success: { (url) in
+            resolve([
+                uploadId: url
+            ])
+        }, failure: { (error) in
+
+        })
+    }
+
     @objc(sendTyping:isTyping:timeout:resolver:rejecter:)
     func sendTyping(roomId: String, isTyping: Bool, timeout: NSNumber, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
