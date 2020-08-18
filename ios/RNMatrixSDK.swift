@@ -907,8 +907,39 @@ class RNMatrixSDK: RCTEventEmitter {
                 uploadId: url
             ])
         }, failure: { (error) in
-
+            reject(nil, "Failed to upload", error)
         })
+    }
+
+    @objc(contentGetDownloadableUrl:resolver:rejecter:)
+    func contentGetDownloadableUrl(matrixContentUri: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        let url = mxSession.mediaManager.url(ofContent: matrixContentUri)
+        if ((url) != nil) {
+            resolve(url)
+        } else {
+            reject(nil, "Failed to get content uri", nil)
+        }
+    }
+
+    @objc(downloadContent:mimeType:folder:resolver:rejecter:)
+    func downloadContent(matrixContentUri: String, mimeType: String, folder: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(E_MATRIX_ERROR, "client is not connected yet", nil)
+            return
+        }
+
+        let mediaLoader = mxSession.mediaManager.downloadMedia(fromMatrixContentURI: matrixContentUri, withType: mimeType, inFolder: folder, success: { (fileUri) in
+            resolve(fileUri)
+        }) { (e) in
+            reject(nil, "Failed to download", e)
+        }
+
+        print("[DOWNLOAD NATIVE IOS] download url: " + (mediaLoader?.downloadMediaURL ?? "NO DOWNLOAD URL"))
     }
 
     @objc(sendTyping:isTyping:timeout:resolver:rejecter:)

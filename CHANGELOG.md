@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha63
+
+* Added `uploadContent` and `contentGetDownloadableUrl` to the SDK
+
 ## 1.0.0-alpha60
 
 * Upgraded android matrix SDK to 0.19.35

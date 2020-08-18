@@ -844,6 +844,21 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
     }
 
+    @ReactMethod
+    public void contentGetDownloadableUrl(String matrixContentUri, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        String url = mxSession.getContentManager().getDownloadableUrl(matrixContentUri, false);
+        if (url != null) {
+            promise.resolve(url);
+        } else {
+            promise.reject(E_MATRIX_ERROR, "Failed to resolve content url");
+        }
+    }
+
     //* ******************************************
     //*  PUSH NOTIFICATIONS
     //* ******************************************

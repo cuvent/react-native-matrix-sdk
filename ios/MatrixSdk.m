@@ -82,6 +82,10 @@ RCT_EXTERN_METHOD(setUserDisplayName:(NSString *)displayName resolver:(RCTPromis
 
 RCT_EXTERN_METHOD(uploadContent:(NSString *)fileUri fileName:(NSString *)fileName mimeType:(NSString *)mimeType uploadId:(NSString *)uploadId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(contentGetDownloadableUrl:(NSString *)matrixContentUri resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(downloadContent:(NSString *)matrixContentUri mimeType:(NSString *)mimeType folder:(NSString *)folder resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(sendTyping:(NSString *)roomId isTyping:(nonnull BOOL *)isTyping timeout:(nonnull NSNumber *)timeout resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(updatePresence:(nonnull BOOL *)isOnline resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)

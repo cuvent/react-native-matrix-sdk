@@ -219,7 +219,14 @@ declare module 'react-native-matrix-sdk' {
     setUserDisplayName(displayName: string): Promise<void>;
 
     /**
-     * Uploads content to the matrix content respository of the connected homeserver.
+     * Returns for a matrix content uri (mxc://...) the downloadable
+     * server url of the content. Currently doesn't support encryption.
+     * @param matrixContentUrl The matrix content url to resolve
+     */
+    contentGetDownloadableUrl(matrixContentUrl: String): Promise<string>
+
+    /**
+     * Uploads content to the matrix content repository of the connected homeserver.
      * @return {@see #SuccessUploadResponse}
      * @param fileUri the absolute file path to the file to be uploaded
      * @param fileName the file name of the file
