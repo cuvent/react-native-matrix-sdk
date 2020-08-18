@@ -70,6 +70,13 @@ declare interface SuccessResponse {
   success: string;
 }
 
+/**
+ * The key is the upload it, the value is the mxc uri.
+ */
+declare interface SuccessUploadResponse {
+  [key: string]: string
+}
+
 declare module 'react-native-matrix-sdk' {
   import {EventSubscriptionVendor} from "react-native";
 
@@ -210,6 +217,16 @@ declare module 'react-native-matrix-sdk' {
      * @param displayName new display name
      */
     setUserDisplayName(displayName: string): Promise<void>;
+
+    /**
+     * Uploads content to the matrix content respository of the connected homeserver.
+     * @return {@see #SuccessUploadResponse}
+     * @param fileUri the absolute file path to the file to be uploaded
+     * @param fileName the file name of the file
+     * @param mimeType like "audio/aac", "image/jpeg"
+     * @param uploadId an upload id for reference.
+     */
+    uploadContent(fileUri: string, fileName: string, mimeType: string, uploadId: string): Promise<SuccessUploadResponse>
 
     /**
      * Sends m.typing event into the specified room that the user is typing.
