@@ -30,6 +30,7 @@ import org.matrix.androidsdk.data.Room;
 import org.matrix.androidsdk.data.RoomState;
 import org.matrix.androidsdk.data.store.MXFileStore;
 import org.matrix.androidsdk.data.timeline.EventTimeline;
+import org.matrix.androidsdk.listeners.IMXMediaUploadListener;
 import org.matrix.androidsdk.listeners.MXEventListener;
 import org.matrix.androidsdk.rest.client.LoginRestClient;
 import org.matrix.androidsdk.rest.model.CreateRoomParams;
@@ -41,6 +42,9 @@ import org.matrix.androidsdk.rest.model.TokensChunkEvents;
 import org.matrix.androidsdk.rest.model.User;
 import org.matrix.androidsdk.rest.model.login.Credentials;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -791,7 +795,53 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                 promise.resolve(null);
             }
         });
+    }
 
+    //* ******************************************
+    //*  MEDIA
+    //* ******************************************
+    @ReactMethod
+    public void uploadContent(String fileUrl, String fileName, String mimeType, String uploadId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        try {
+            File file = new File(fileUrl);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            mxSession.getMediaCache().uploadContent(fileInputStream, fileName, mimeType, uploadId, new IMXMediaUploadListener() {
+                @Override
+                public void onUploadStart(String uploadId) {
+
+                }
+
+                @Override
+                public void onUploadProgress(String uploadId, UploadStats uploadStats) {
+
+                }
+
+                @Override
+                public void onUploadCancel(String uploadId) {
+                    promise.reject(uploadId);
+                }
+
+                @Override
+                public void onUploadError(String uploadId, int serverResponseCode, String serverErrorMessage) {
+                    promise.reject(uploadId);
+                }
+
+                @Override
+                public void onUploadComplete(String uploadId, String contentUri) {
+                    WritableMap result = Arguments.createMap();
+                    result.putString("uploadId", contentUri);
+                    promise.resolve(result);
+                }
+            });
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            promise.reject("File not found");
+        }
     }
 
     //* ******************************************
