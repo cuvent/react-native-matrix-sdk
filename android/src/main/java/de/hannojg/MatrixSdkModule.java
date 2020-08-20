@@ -834,7 +834,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
                 @Override
                 public void onUploadComplete(String uploadId, String contentUri) {
                     WritableMap result = Arguments.createMap();
-                    result.putString("uploadId", contentUri);
+                    result.putString(uploadId, contentUri);
                     promise.resolve(result);
                 }
             });
