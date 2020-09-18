@@ -73,10 +73,10 @@ Add the following to your pods file
   pod 'OLMKit', :modular_headers => true
   pod 'Realm', :modular_headers => true
   pod 'libbase58', :modular_headers => true
-  pod 'SwiftMatrixSDK', :git => 'https://github.com/hannojg/matrix-ios-sdk.git', :branch => 'develop'
+  pod 'MatrixSDK/SwiftSupport', :git => 'https://github.com/hannojg/matrix-ios-sdk.git', :branch => 'develop'
 ```
 
-Before you can run `pod install` you need to setup a Swift/Objective-C briding header, as this library uses 
+Before you can run `pod install` you need to setup a Swift/Objective-C bridging header, as this library uses 
 Swift code this is needed for RN to work.
 
 #### Step 2: Create Swift/Obj-C bridging header:

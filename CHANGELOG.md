@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha65
+
+- Updated native SDKs
+
 ## 1.0.0-alpha64
 
 * Fixed `uploadContent` on android to return the upload id in response, instead of string "uploadId"

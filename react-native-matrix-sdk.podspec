@@ -21,6 +21,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "SwiftMatrixSDK", "0.16.7"
+  s.dependency "MatrixSDK/SwiftSupport"
 
 end
