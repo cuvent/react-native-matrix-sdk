@@ -109,10 +109,12 @@ class RNMatrixSDK: RCTEventEmitter {
 
     @objc(setCredentials:deviceId:userId:homeServer:refreshToken:)
     func setCredentials(accessToken: String, deviceId: String, userId: String, homeServer: String, refreshToken: String) {
-        self.mxCredentials.accessToken = accessToken
-        self.mxCredentials.deviceId = deviceId
-        self.mxCredentials.userId = userId
-        self.mxCredentials.homeServer = homeServer
+        let mxCredentials = MXCredentials()
+        mxCredentials.accessToken = accessToken
+        mxCredentials.deviceId = deviceId
+        mxCredentials.userId = userId
+        mxCredentials.homeServer = homeServer
+        self.mxCredentials = mxCredentials;
     }
 
     @objc(startSession:rejecter:)

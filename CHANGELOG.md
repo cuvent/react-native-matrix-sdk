@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha66
+
+- Added `setCredentials` method which can be used to just pass the credentials instead of logging in
+- (Not public yet) added on android `loginWithToken`
+
 ## 1.0.0-alpha65
 
 - Updated native SDKs

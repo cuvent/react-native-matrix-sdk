@@ -90,6 +90,18 @@ declare module 'react-native-matrix-sdk' {
     setAdditionalEventTypes(types: string[]): void;
 
     configure(host: string): void;
+
+    /**
+     * When you already obtained the credentials using {@see login}, instead of logging in on e.g. every app start,
+     * you can pass the credentials here. This will save you one login request.
+     */
+    setCredentials(accessToken: string, deviceId: string, userId: string, homeServer: string, refreshToken?: string): void;
+
+    /**
+     * Logging the user in by username and password.
+     * @param username
+     * @param password
+     */
     login(username: string, password: string): Promise<MXCredentials>;
     startSession(): Promise<MXSessionAttributes>;
 
