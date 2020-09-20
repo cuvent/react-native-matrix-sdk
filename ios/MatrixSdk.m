@@ -20,6 +20,8 @@ RCT_EXTERN_METHOD(setAdditionalEventTypes:(NSArray *)types)
 
 RCT_EXTERN_METHOD(configure:(NSString *)url)
 
+RCT_EXTERN_METHOD(setCredentials:(nonnull NSString *)accessToken deviceId:(nonnull NSString *)deviceId userId:(nonnull NSString *)userId homeServer:(nonnull NSString *)homeServer refreshToken:(NSString *)refreshToken)
+
 RCT_EXTERN_METHOD(login:(nonnull NSString *)username password:(nonnull NSString *)password resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(startSession:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)

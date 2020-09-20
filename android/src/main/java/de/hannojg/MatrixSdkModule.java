@@ -120,6 +120,47 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
+    public void loginWithToken(String username, String token, String deviceName, Promise promise) {
+        if (hsConfig != null) {
+            if (hsConfig.getCredentials() != null) {
+                try {
+                    JsonElement json = JsonParser.parseString(hsConfig.getCredentials().toJson().toString());
+                    WritableMap map = RNJson.convertJsonToMap(json.getAsJsonObject());
+                    promise.resolve(map);
+                    return;
+                } catch (JSONException ignore) {
+                    // swallow
+                }
+            }
+        }
+
+        new LoginRestClient(hsConfig).loginWithToken(username, token, deviceName, new RejectingOnErrorApiCallback<Credentials>(promise) {
+            @Override
+            public void onSuccess(Credentials info) {
+                try {
+                    hsConfig.setCredentials(info);
+                    JsonElement json = JsonParser.parseString(info.toJson().toString());
+                    WritableMap map = RNJson.convertJsonToMap(json.getAsJsonObject());
+                    promise.resolve(map);
+                } catch (JSONException e) {
+                    promise.reject(E_UNEXCPECTED_ERROR, "{\"error\": \"Couldn't parse JSON response\"}");
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void setCredentials(String accessToken, String deviceId, String userId, String homeServer, String refreshToken) {
+        Credentials credentials = new Credentials();
+        credentials.accessToken = accessToken;
+        credentials.deviceId = deviceId;
+        credentials.userId = userId;
+        credentials.homeServer = homeServer;
+        credentials.refreshToken = refreshToken;
+        hsConfig.setCredentials(credentials);
+    }
+
+    @ReactMethod
     public void startSession(Promise promise) {
         if (mxSession != null && mxSession.getDataHandler().isInitialSyncComplete()) {
             // TODO: refactor, duplicated code

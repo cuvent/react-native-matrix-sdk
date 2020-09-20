@@ -107,6 +107,14 @@ class RNMatrixSDK: RCTEventEmitter {
         })
     }
 
+    @objc(setCredentials:deviceId:userId:homeServer:refreshToken:)
+    func setCredentials(accessToken: String, deviceId: String, userId: String, homeServer: String, refreshToken: String) {
+        self.mxCredentials.accessToken = accessToken
+        self.mxCredentials.deviceId = deviceId
+        self.mxCredentials.userId = userId
+        self.mxCredentials.homeServer = homeServer
+    }
+
     @objc(startSession:rejecter:)
     func startSession(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         // when session is set and connected return the connected session
