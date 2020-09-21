@@ -896,10 +896,14 @@ class RNMatrixSDK: RCTEventEmitter {
             return
         }
 
-        mxSession.myUser.setDisplayName(displayName, success: {
-            resolve(true)
-        }) { (error) in
-            reject(self.E_MATRIX_ERROR, "Failed to update display name", error)
+        if (self.mxSession.myUser != nil) {
+            self.mxSession.myUser.setDisplayName(displayName, success: {
+                resolve(true)
+            }) { (error) in
+                reject(self.E_MATRIX_ERROR, "Failed to update display name", error)
+            }
+        } else {
+            reject(E_MATRIX_ERROR, "Matrix session wasn't ready to change user display name yet", nil)
         }
     }
 
@@ -1005,7 +1009,7 @@ internal func unNil(value: Any?) -> Any? {
 
 internal func convertMXRoomToDictionary(room: MXRoom?, members: MXRoomMembers?) -> [String: Any?] {
     let lastMessage = room?.summary?.lastMessageEvent ?? nil
-    let isLeft = room?.summary.membership == MXMembership.leave
+    let isLeft = room?.summary?.membership == MXMembership.leave
     var membersDict: [[String: String?]]? = [[String: String?]]()
     if members !== nil {
         membersDict = members?.members.map({ (roomMember) -> [String: String?] in
@@ -1015,9 +1019,9 @@ internal func convertMXRoomToDictionary(room: MXRoom?, members: MXRoomMembers?) 
 
     return [
         "room_id": unNil(value: room?.roomId),
-        "name": unNil(value: room?.summary.displayname),
-        "notification_count": unNil(value: room?.summary.notificationCount),
-        "highlight_count": unNil(value: room?.summary.highlightCount),
+        "name": unNil(value: room?.summary?.displayname),
+        "notification_count": unNil(value: room?.summary?.notificationCount),
+        "highlight_count": unNil(value: room?.summary?.highlightCount),
         "is_direct": room?.isDirect, //unNil(value: room?.summary.isDirect),
         "last_message": convertMXEventToDictionary(event: lastMessage),
         "isLeft": isLeft,

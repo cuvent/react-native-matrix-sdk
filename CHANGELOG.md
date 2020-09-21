@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha67
+
+- Fixed iOS crash issues
+
 ## 1.0.0-alpha66
 
 - Added `setCredentials` method which can be used to just pass the credentials instead of logging in
