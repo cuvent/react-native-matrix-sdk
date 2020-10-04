@@ -148,7 +148,7 @@ declare module 'react-native-matrix-sdk' {
      * Gets a single room (left rooms included).
      * Will reject if room does not exist.
      */
-    getRoom(): Promise<MXRoomAttributes>;
+    getRoom(roomId: string): Promise<MXRoomAttributes>;
 
     getInvitedRooms(): Promise<MXRoomAttributes[]>;
     getPublicRooms(url: string): Promise<PublicRoom[]>;
