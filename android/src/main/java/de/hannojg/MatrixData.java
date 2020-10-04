@@ -23,7 +23,6 @@ public class MatrixData {
         map.putString("event_id", matrixEvent.eventId);
         map.putString("room_id", matrixEvent.roomId);
         map.putString("sender_id", matrixEvent.sender);
-        map.putDouble("age", matrixEvent.age != null ? matrixEvent.age : Long.MAX_VALUE - 1);
         map.putDouble("ts", matrixEvent.originServerTs);
         map.putMap("content", RNJson.convertJsonToMap(matrixEvent.getContentAsJsonObject()));
         return map;

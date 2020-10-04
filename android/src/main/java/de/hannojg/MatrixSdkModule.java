@@ -505,6 +505,32 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
+    public void getRoom(String roomId, Promise promise) {
+        if (mxSession == null) {
+            promise.reject(E_MATRIX_ERROR, "client is not connected yet");
+            return;
+        }
+
+        try {
+            Room room = mxSession.getDataHandler().getRoom(roomId, false);
+            if (room == null) {
+                for (Room leftRoom : mxSession.getDataHandler().getLeftRooms()) {
+                    if (leftRoom.getRoomId() == roomId) {
+                        room = leftRoom;
+                        break;
+                    }
+                }
+                if (room == null) {
+                    throw new Exception("No known room");
+                }
+            }
+            promise.resolve(MatrixData.convertRoomToMap(room));
+        } catch(Exception ex) {
+            promise.reject(E_MATRIX_ERROR, "Room has not been found", ex);
+        }
+    }
+
+    @ReactMethod
     public void forgetRoom(String roomId, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
@@ -529,6 +555,7 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
             Log.d(TAG, event.toString());
         }
     };
+
     @ReactMethod
     public void listenToRoom(String roomId, Promise promise) {
         if (mxSession == null) {

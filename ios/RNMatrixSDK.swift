@@ -462,6 +462,27 @@ class RNMatrixSDK: RCTEventEmitter {
         }
     }
 
+    @objc(getRoom:resolver:rejecter:)
+    func getRoom(roomId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        if mxSession == nil {
+            reject(nil, "client is not connected yet", nil)
+            return
+        }
+
+        let room = mxSession.room(withRoomId: roomId)
+        if (room == nil) {
+            reject(self.E_MATRIX_ERROR, "Room not found", nil)
+            return
+        }
+        room?.members({ (members) in
+            resolve(convertMXRoomToDictionary(room: room, members: members))
+        }, lazyLoadedMembers: { (members) in
+            resolve(convertMXRoomToDictionary(room: room, members: members))
+        }, failure: { (e) in
+            reject(self.E_MATRIX_ERROR, "Room not found", e)
+        })
+    }
+
     @objc(getLeftRooms:rejecter:)
     func getLeftRooms(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
@@ -1035,7 +1056,6 @@ internal func convertMXEventToDictionary(event: MXEvent?) -> [String: Any] {
         "event_id": unNil(value: event?.eventId) as Any,
         "room_id": unNil(value: event?.roomId) as Any,
         "sender_id": unNil(value: event?.sender) as Any,
-        "age": unNil(value: event?.age) as Any,
         "content": unNil(value: event?.content) as Any,
         "ts": unNil(value: event?.originServerTs) as Any,
     ]

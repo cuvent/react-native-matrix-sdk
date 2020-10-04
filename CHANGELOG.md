@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha68
+
+- Removed age property from events
+- Added `getRoom(roomId)` functionality
+
 ## 1.0.0-alpha67
 
 - Fixed iOS crash issues
