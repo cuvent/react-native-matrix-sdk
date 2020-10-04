@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha69
+
+- Fixed types
+
 ## 1.0.0-alpha68
 
 - Removed age property from events
