@@ -474,10 +474,17 @@ class RNMatrixSDK: RCTEventEmitter {
             reject(self.E_MATRIX_ERROR, "Room not found", nil)
             return
         }
+        var hasResolved = false;
         room?.members({ (members) in
-            resolve(convertMXRoomToDictionary(room: room, members: members))
+            if (!hasResolved) {
+                hasResolved = true;
+                resolve(convertMXRoomToDictionary(room: room, members: members))
+            }
         }, lazyLoadedMembers: { (members) in
-            resolve(convertMXRoomToDictionary(room: room, members: members))
+            if (!hasResolved) {
+                hasResolved = true;
+                resolve(convertMXRoomToDictionary(room: room, members: members))
+            }
         }, failure: { (e) in
             reject(self.E_MATRIX_ERROR, "Room not found", e)
         })
