@@ -261,7 +261,6 @@ class RNMatrixSDK: RCTEventEmitter {
                 return
             }
         }
-        return
     }
 
     @objc(leaveRoom:resolver:rejecter:)
