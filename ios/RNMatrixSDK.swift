@@ -250,7 +250,8 @@ class RNMatrixSDK: RCTEventEmitter {
                 let room = response.value
                 room?.members(completion: { (members) in
                     guard members.isSuccess else {
-                        reject(self.E_MATRIX_ERROR, "Couldn't retrieve room member list after joining. The join itself was successful!", members.error);
+                        //reject(self.E_MATRIX_ERROR, "Couldn't retrieve room member list after joining. The join itself was successful!", members.error);
+                        resolve(convertMXRoomToDictionary(room: response.value, members: nil))
                         return
                     }
                     resolve(convertMXRoomToDictionary(room: response.value, members: members.value ?? nil))
@@ -485,7 +486,10 @@ class RNMatrixSDK: RCTEventEmitter {
                 resolve(convertMXRoomToDictionary(room: room, members: members))
             }
         }, failure: { (e) in
-            reject(self.E_MATRIX_ERROR, "Room not found", e)
+            if (!hasResolved) {
+                hasResolved = true;
+                resolve(convertMXRoomToDictionary(room: room, members: nil))
+            }
         })
     }
 
