@@ -14,7 +14,11 @@
     "baseUrl": "https://github.com/cuvent/react-native-matrix-sdk"
   },
   "keywords": [
-    "react-native"
+    "react-native",
+    "react-native-matrix-sdk",
+    "matrix-sdk",
+    "matrix.org",
+    "rnms"
   ],
   "author": {
     "name": "Hanno Gödecke",
