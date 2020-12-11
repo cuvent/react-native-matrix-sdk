@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-alpha71
+
+- iOS: fixed crash when retrieving rooms
+- iOS: fixed issue where promise of joinRoom did neither resolve/nor reject (was blocking) 
+
 ## 1.0.0-alpha70
 
 - Fixed types
