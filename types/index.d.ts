@@ -21,8 +21,8 @@ declare interface MXRoomMember {
   avatarUrl: string;
 }
 
-declare interface MXMessageEvent<ContentType = any> {
-  event_type: string;
+declare interface MXMessageEvent<ContentType = any, EventLiteral = string> {
+  event_type: EventLiteral;
   event_id: string;
   room_id: string;
   sender_id: string;
