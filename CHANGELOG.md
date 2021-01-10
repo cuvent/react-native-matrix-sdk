@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-alpha72
+
+- Improved Event type to accept generic type parameters for their content and type
+
 ## 1.0.0-alpha71
 
 - iOS: fixed crash when retrieving rooms
