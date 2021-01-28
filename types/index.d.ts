@@ -32,6 +32,11 @@ declare interface MXMessageEvent<ContentType = any, EventLiteral = string> {
    */
   ts: number;
   content: ContentType;
+  /**
+   * The message's transaction id. Will only be set for messages send on the user's device.
+   * See https://matrix.org/docs/spec/client_server/latest#id413
+   */
+  txnId?: string;
 }
 
 declare interface MXRoomAttributes {
@@ -71,7 +76,7 @@ declare interface SuccessUploadResponse {
 }
 
 declare module 'react-native-matrix-sdk' {
-  import {EventSubscriptionVendor} from "react-native";
+  import { EventSubscriptionVendor } from "react-native";
 
   export interface MatrixSDKStatic extends EventSubscriptionVendor {
     /**
@@ -194,16 +199,18 @@ declare module 'react-native-matrix-sdk' {
      * @param roomId
      * @param messageType the message type (text, image, video, etc - see specifications)
      * @param data
+     * @param txnId transaction id
      */
-    sendMessageToRoom(roomId: string, messageType: string, data: any): Promise<SuccessResponse>;
+    sendMessageToRoom(roomId: string, messageType: string, data: any, txnId?: string): Promise<SuccessResponse>;
 
     /**
      * Sends an event to a room
      * @param roomId
      * @param eventType
      * @param data
+     * @param txnId transaction id
      */
-    sendEventToRoom(roomId: string, eventType: string, data: any): Promise<SuccessResponse>;
+    sendEventToRoom(roomId: string, eventType: string, data: any, txnId?: string): Promise<SuccessResponse>;
 
     sendReadReceipt(roomId: string, eventId: string): Promise<SuccessResponse>;
 

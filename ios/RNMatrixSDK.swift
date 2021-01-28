@@ -816,8 +816,8 @@ class RNMatrixSDK: RCTEventEmitter {
         }
     }
 
-    @objc(sendMessageToRoom:messageType:data:resolver:rejecter:)
-    func sendMessageToRoom(roomId: String, messageType: String, data: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc(sendMessageToRoom:messageType:data:txnId:resolver:rejecter:)
+    func sendMessageToRoom(roomId: String, messageType: String, data: [String: Any], txnId: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(nil, "client is not connected yet", nil)
             return
@@ -830,18 +830,13 @@ class RNMatrixSDK: RCTEventEmitter {
             return
         }
 
-        mxSession.matrixRestClient.sendMessage(toRoom: roomId, messageType: convertStringToMXMessageType(type: messageType), content: data) { (response) in
-            if(response.isFailure) {
-                reject(self.E_MATRIX_ERROR, nil, response.error)
-                return
-            }
-
-            resolve(["success": response.value])
-        }
+        var dataWithType = data;
+        dataWithType["msgtype"] = convertStringToMXMessageType(type: messageType);
+        sendEventToRoom(roomId: roomId, eventType: kMXEventTypeStringRoomMessage, data: data, txnId: txnId, resolve: resolve, reject: reject)
     }
 
-    @objc(sendEventToRoom:eventType:data:resolver:rejecter:)
-    func sendEventToRoom(roomId: String, eventType: String, data: [String: Any], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    @objc(sendEventToRoom:eventType:data:txnId:resolver:rejecter:)
+    func sendEventToRoom(roomId: String, eventType: String, data: [String: Any], txnId: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         if mxSession == nil {
             reject(nil, "client is not connected yet", nil)
             return
@@ -854,7 +849,7 @@ class RNMatrixSDK: RCTEventEmitter {
             return
         }
 
-        mxSession.matrixRestClient.sendEvent(toRoom: roomId, eventType: MXEventType.custom(eventType), content: data, txnId: UUID().uuidString) { (response) in
+        mxSession.matrixRestClient.sendEvent(toRoom: roomId, eventType: MXEventType.custom(eventType), content: data, txnId: txnId ?? UUID().uuidString) { (response) in
             if(response.isFailure) {
                 reject(self.E_MATRIX_ERROR, nil, response.error)
                 return
@@ -1068,6 +1063,7 @@ internal func convertMXEventToDictionary(event: MXEvent?) -> [String: Any] {
         "sender_id": unNil(value: event?.sender) as Any,
         "content": unNil(value: event?.content) as Any,
         "ts": unNil(value: event?.originServerTs) as Any,
+        "txnId": unNil(value: event?.unsignedData?.transactionId) as Any,
     ]
 }
 

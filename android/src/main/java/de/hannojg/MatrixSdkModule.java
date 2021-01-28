@@ -780,14 +780,14 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     //*  SENDING EVENTS
     //* ******************************************
     @ReactMethod
-    public void sendMessageToRoom(String roomId, String messageType, ReadableMap data, Promise promise) {
+    public void sendMessageToRoom(String roomId, String messageType, ReadableMap data, String txnId, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
             return;
         }
 
         mxSession.getRoomsApiClient().sendMessage(
-                UUID.randomUUID().toString(),
+                txnId != null ? txnId : UUID.randomUUID().toString(),
                 roomId,
                 RNJson.convertMapToJson(data),
                 new RejectingOnErrorApiCallback<CreatedEvent>(promise) {
@@ -801,14 +801,14 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
     }
 
     @ReactMethod
-    public void sendEventToRoom(String roomId, String eventType, ReadableMap data, Promise promise) {
+    public void sendEventToRoom(String roomId, String eventType, ReadableMap data, String txnId, Promise promise) {
         if (mxSession == null) {
             promise.reject(E_MATRIX_ERROR, "client is not connected yet");
             return;
         }
 
         mxSession.getRoomsApiClient().sendEventToRoom(
-                UUID.randomUUID().toString(),
+                txnId != null ? txnId : UUID.randomUUID().toString(),
                 roomId,
                 eventType,
                 RNJson.convertMapToJson(data),

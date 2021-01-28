@@ -25,6 +25,11 @@ public class MatrixData {
         map.putString("sender_id", matrixEvent.sender);
         map.putDouble("ts", matrixEvent.originServerTs);
         map.putMap("content", RNJson.convertJsonToMap(matrixEvent.getContentAsJsonObject()));
+
+        if (matrixEvent.unsigned != null) {
+            map.putString("txnId", matrixEvent.unsigned.transaction_id);
+        }
+
         return map;
     }
 
