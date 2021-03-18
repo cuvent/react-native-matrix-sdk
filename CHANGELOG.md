@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.0-alpha74
+
+- android: fix crash when trying to send typing notifications to none existing room
 ## 1.0.0-alpha72
 
 - Improved Event type to accept generic type parameters for their content and type

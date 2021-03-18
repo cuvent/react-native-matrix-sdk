@@ -857,6 +857,10 @@ public class MatrixSdkModule extends ReactContextBaseJavaModule implements Lifec
         }
 
         Room room = mxSession.getDataHandler().getRoom(roomId);
+        if (room == null) {
+            promise.reject(E_MATRIX_ERROR, "Room not found");
+            return;
+        }
         room.sendTypingNotification(isTyping, timeout, new RejectingOnErrorApiCallback<Void>(promise) {
             @Override
             public void onSuccess(Void info) {
