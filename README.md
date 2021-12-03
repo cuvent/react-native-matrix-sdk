@@ -1,5 +1,12 @@
 ![badge](https://img.shields.io/npm/v/react-native-matrix-sdk)
 
+<hr />
+
+⚠️ <b>NOTICE:</b> This reposiroty is unmaintained and may be used for experimental purposes. We don't actively use this package in production anymore.
+We falled back to use the `matrix-js-sdk` SDK. Part of the reason was, that using this native module all the data had to be brought from the native side to JS via the bridge. As chat data can be alot it caused severe performance impacts. This might not be an issue with the upcoming TubroModules/JSI architecture. However, the JS SDK is also more feature complete.
+
+<hr />
+
 # react-native-matrix-sdk
 
 This is a **native** react-native library for [matrix.org](https://matrix.org). 
@@ -184,8 +191,3 @@ const events = await MatrixSDK.loadMessagesInRoom(roomId, 50, true);
 // Load further 50 messages
 const furtherEvents = await MatrixSDK.loadMessagesInRoom(roomId, 50, false);
 ``` 
-
-## Software license
-
-The use of this library is governed by a [Creative Commons license](https://creativecommons.org/licenses/by-nc-sa/2.0/). You can use, modify, copy, and distribute this edition as long as it’s *for non-commercial use*, you provide attribution, and share under a similar license. https://github.com/hannojg/react-native-matrix-sdk/blob/master/LICENSE.md
-<br />You can't use this library in a commercial product.
