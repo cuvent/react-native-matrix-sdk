@@ -2,8 +2,8 @@
 
 <hr />
 
-⚠️ <b>NOTICE:</b> This reposiroty is unmaintained and may be used for experimental purposes. We don't actively use this package in production anymore.
-We falled back to use the `matrix-js-sdk` SDK. Part of the reason was, that using this native module all the data had to be brought from the native side to JS via the bridge. As chat data can be alot it caused severe performance impacts. This might not be an issue with the upcoming TubroModules/JSI architecture. However, the JS SDK is also more feature complete.
+⚠️ <b>NOTICE:</b> This repository is unmaintained and may be used for experimental purposes. We don't actively use this package in production anymore.
+We fall back to using the `matrix-js-sdk` SDK. Part of the reason was, that using this native module all the data had to be brought from the native side to JS via the bridge. As chat data can be a lot it caused severe performance impacts. This might not be an issue with the upcoming TubroModules/JSI architecture. However, the JS SDK is also more feature complete.
 
 <hr />
 
