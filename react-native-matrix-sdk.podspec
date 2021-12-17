@@ -20,7 +20,8 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,swift}"
   s.requires_arc = true
 
-  s.dependency "React"
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
+  s.dependency "React-Core"
   s.dependency "MatrixSDK/SwiftSupport"
 
 end
